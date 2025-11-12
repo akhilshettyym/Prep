@@ -1,4 +1,4 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Platform } from "react-native";
 
 export const styles = StyleSheet.create({
     container: {
@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         paddingVertical: 2,
-        paddingTop: 40,
+        paddingTop: Platform.OS === "ios" ? 55 : 40,
         backgroundColor: "#c4e8f6",
     },
     supportText: {
