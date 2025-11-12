@@ -1,13 +1,14 @@
-"use client"
-
 import { useState } from "react"
-import { View, Text, TouchableOpacity, Image, StyleSheet, TextInput } from "react-native"
+import { View, Text, TouchableOpacity, Image, TextInput } from "react-native"
+import { useRouter } from "expo-router"
 import Ionicons from "@expo/vector-icons/Ionicons"
+import { styles } from "../../assets/styles/Header"
 
-const HeaderMobile = () => {
+const Header = () => {
   const [cartCount] = useState(2)
   const [isLoggedIn] = useState(false)
   const [searchText, setSearchText] = useState("")
+  const router = useRouter();
 
   const handleSearch = () => {
     console.log("Search query:", searchText)
@@ -22,10 +23,12 @@ const HeaderMobile = () => {
       <View style={styles.header}>
         <View style={styles.leftSection}>
           <TouchableOpacity style={styles.iconButton}>
-            <Ionicons name="menu-outline" size={28} color="#fff" />
+            <Ionicons name="menu-outline" size={36} color="#fff" />
           </TouchableOpacity>
 
-          <Image source={require("../../assets/images/image.png")} style={styles.logo} />
+          <TouchableOpacity onPress={() => router.push("/pdp")}>
+            <Image source={require("../../assets/images/image.png")} style={styles.logo} />
+          </TouchableOpacity>
         </View>
 
         <View style={styles.actions}>
@@ -64,96 +67,4 @@ const HeaderMobile = () => {
   )
 }
 
-export default HeaderMobile
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: "#fff",
-    width: "100%",
-  },
-  supportBar: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 4,
-    backgroundColor: "#c4e8f6",
-  },
-  supportText: {
-    fontSize: 12,
-    color: "#333",
-    fontWeight: "700",
-  },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    justifyContent: "space-between",
-    backgroundColor: "#004e7d",
-  },
-  iconButton: {
-    paddingHorizontal: 8,
-  },
-  logo: {
-    width: 80,
-    height: 30,
-    resizeMode: "contain",
-    marginLeft: 8,
-  },
-  actions: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
-  },
-  cartButton: {
-    position: "relative",
-  },
-  cartBadge: {
-    position: "absolute",
-    top: -4,
-    right: -8,
-    backgroundColor: "#FF3B30",
-    borderRadius: 8,
-    paddingHorizontal: 4,
-    minWidth: 16,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  cartBadgeText: {
-    color: "#fff",
-    fontSize: 10,
-    fontWeight: "bold",
-  },
-  searchBarWrapper: {
-    backgroundColor: "#004e7d",
-    paddingHorizontal: 10,
-    paddingBottom: 8,
-    alignItems: "center",
-  },
-  searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fff",
-    borderRadius: 6,
-    overflow: "hidden",
-    width: "100%",
-    height: 36,
-  },
-  input: {
-    flex: 1,
-    height: 40,
-    paddingHorizontal: 12,
-    color: "#000",
-    fontSize: 12,
-  },
-  searchButton: {
-    backgroundColor: "#d41e3d",
-    padding: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  leftSection: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-})
+export default Header;

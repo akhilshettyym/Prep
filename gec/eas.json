@@ -1,0 +1,32 @@
+{
+ "cli": {
+   "version": ">= 16.26.0",
+   "appVersionSource": "remote"
+ },
+ "build": {
+   "development": {
+     "developmentClient": true,
+     "distribution": "internal",
+     "env": {
+       "EXPO_ROUTER_APP_ROOT": "app"
+     }
+   },
+   "preview": {
+     "distribution": "internal",
+     "env": {
+       "EXPO_ROUTER_APP_ROOT": "app",
+       "BLOOM_REACH_URL": "https://",
+       "HOME_PAGE_BANNER": "https://.jpg"
+     }
+   },
+   "production": {
+     "autoIncrement": true,
+     "env": {
+       "EXPO_ROUTER_APP_ROOT": "app"
+     }
+   }
+ },
+ "submit": {
+   "production": {}
+ }
+}

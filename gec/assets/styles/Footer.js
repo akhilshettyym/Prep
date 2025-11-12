@@ -1,0 +1,113 @@
+import { StyleSheet, Dimensions } from "react-native";
+
+export const styles = StyleSheet.create({
+    container: {
+        alignItems: 'center',
+        backgroundColor: '#fff',
+        paddingBottom: 1,
+    },
+    deals: {
+        textAlign: 'center',
+        marginVertical: 10,
+        fontSize: 18,
+        fontWeight: '400',
+        letterSpacing: -1,
+    },
+    searchContainer: {
+        flexDirection: 'row',
+        width: '80%',
+        marginBottom: 20,
+    },
+    input: {
+        flex: 1,
+        height: 40,
+        paddingHorizontal: 15,
+        fontSize: 12,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderTopLeftRadius: 5,
+        borderBottomLeftRadius: 5,
+    },
+    button: {
+        backgroundColor: '#d41e3d',
+        paddingHorizontal: 12,
+        justifyContent: 'center',
+        borderTopRightRadius: 5,
+        borderBottomRightRadius: 5,
+    },
+    iconRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '40%',
+        marginVertical: 10,
+    },
+    bottomBar: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        paddingHorizontal: 20,
+        paddingVertical: 5,
+        backgroundColor: '#212934',
+    },
+    logo: {
+        width: 155,
+        height: 50,
+    },
+    pickerWrapper: {
+        position: 'relative',
+    },
+    picker: {
+        width: 125,
+        height: 33,
+        color: 'transparent',
+        borderRadius: 3,
+    },
+    pickerItem: {
+        color: '#858585',
+        fontSize: 14,
+    },
+    pickerLabel: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingLeft: 8,
+        pointerEvents: 'none',
+        backgroundColor: '#ffffffff',
+        borderRadius: 5,
+    },
+    flag: {
+        width: 24,
+        height: 16,
+        marginRight: 6,
+    },
+    pickerText: {
+        color: '#858585',
+        fontSize: 14,
+    },
+    copyrightText: {
+        width: '100%',
+        textAlign: 'center',
+        paddingHorizontal: 20,
+        backgroundColor: '#212934',
+        color: '#fff',
+        fontSize: 13,
+        lineHeight: 15,
+        letterSpacing: -0.8,
+    },
+    tncText: {
+        width: '100%',
+        textAlign: 'center',
+        paddingHorizontal: 20,
+        backgroundColor: '#212934',
+        color: '#fff',
+        fontSize: 14,
+        lineHeight: 20,
+        letterSpacing: -1,
+        paddingBottom: 12,
+    }
+})

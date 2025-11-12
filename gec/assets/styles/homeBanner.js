@@ -1,0 +1,140 @@
+import { StyleSheet, Platform } from "react-native";
+
+export const styles = StyleSheet.create({
+    screen: {
+        backgroundColor: '#ffffffff',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingTop: 40,
+        paddingBottom: 20,
+    },
+    outerSource: {
+        position: 'absolute',
+        top: 0,
+        left: 20,
+        right: 20,
+        height: 125,
+        backgroundColor: '#f7f7f7ff',
+        justifyContent: 'center',
+        alignItems: 'center',
+        zIndex: 1,
+        paddingBottom: 60,
+    },
+    sourceText: {
+        color: '#000000ff',
+        fontWeight: 'bold',
+        fontSize: 17,
+        textAlign: 'center',
+        paddingHorizontal: 30,
+        lineHeight: 22,
+    },
+    mainContainer: {
+        width: '90%',
+        height: 140,
+        backgroundColor: '#ffffffff',
+        borderRadius: 5,
+        marginTop: 30,
+        padding: 16,
+        alignSelf: 'center',
+        zIndex: 2,
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 6 },
+                shadowOpacity: 0.22,
+                shadowRadius: 16,
+            },
+            android: {
+                elevation: 12,
+            },
+            web: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 6 },
+                shadowOpacity: 0.22,
+                shadowRadius: 16,
+            }
+        }),
+    },
+    innerContainer: {
+        width: '100%',
+        height: '100%',
+        backgroundColor: '#f7f7f7ff',
+        borderRadius: 5,
+        overflow: 'hidden',
+        flexDirection: 'row',
+        ...Platform.select({
+            ios: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 6 },
+                shadowOpacity: 0.15,
+                shadowRadius: 8,
+            },
+            android: {
+                elevation: 6,
+            },
+            web: {
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 6 },
+                shadowOpacity: 0.15,
+                shadowRadius: 8,
+            }
+        }),
+    },
+    imageContainer: {
+        width: '35%',
+        height: '85%',
+        overflow: 'hidden',
+        borderRadius: 5,
+        marginLeft: 10,
+        marginTop: 10,
+    },
+    image: {
+        width: '180%',
+        height: '100%',
+        marginLeft: '-40%',
+    },
+    textContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        paddingLeft: 12,
+        paddingRight: 16,
+        paddingVertical: 8,
+    },
+    saveUpToText: {
+        fontSize: 12,
+        color: '#000',
+        fontWeight: '700',
+        letterSpacing: 1,
+        marginBottom: 1,
+    },
+    discountText: {
+        fontSize: 22,
+        fontWeight: '800',
+        color: '#000000ff',
+        marginBottom: 2,
+        lineHeight: 24,
+        letterSpacing: 3,
+    },
+    selectProductsText: {
+        fontSize: 12,
+        color: '#000000ff',
+        marginBottom: 8,
+        lineHeight: 14,
+        fontWeight: '700',
+        letterSpacing: 1,
+    },
+    button: {
+        backgroundColor: '#d41e3d',
+        paddingVertical: 8,
+        paddingHorizontal: 14,
+        borderRadius: 5,
+        alignSelf: 'flex-start',
+    },
+    buttonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 12,
+        letterSpacing: 0.5,
+    },
+})
