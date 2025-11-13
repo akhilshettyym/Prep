@@ -24,20 +24,7 @@ export default function PDP() {
   const options = Array.from({ length: 9 }, (_, i) => (i + 1).toString()).concat("10+")
 
   const images = [
-    "https://images.globalindustrial.com/images/pdp/298541.webp?t=1762638719316",
-    "https://i1.ytimg.com/vi/JUmW0lypQ0U/mqdefault.jpg?imageTimeUpdated=1762638719297",
-    "https://images.globalindustrial.com/images/pdp/298541_100.webp?t=1762638719316",
-    "https://images.globalindustrial.com/images/pdp/298541_01.webp?t=1762638719316",
-    "https://images.globalindustrial.com/images/pdp/298541_02.webp?t=1762638719316",
-    "https://images.globalindustrial.com/images/pdp/298541_03.webp?t=1762638719316",
-    "https://images.globalindustrial.com/images/pdp/298541_04.webp?t=1762638719316",
-    "https://images.globalindustrial.com/images/pdp/298541_05.webp?t=1762638719316",
-    "https://images.globalindustrial.com/images/co/298541IN_1wco.webp?t=1762638719316",
-    "https://images.globalindustrial.com/images/co/298541IN_2wco.webp?t=1762638719316",
-    "https://images.globalindustrial.com/images/co/298541IN_3wco.webp?t=1762638719316",
-    "https://images.globalindustrial.com/images/co/298541IN_4wco.webp?t=1762638719316",
-    "https://images.globalindustrial.com/images/co/298541IN_5wco.webp?t=1762638719316",
-    "https://images.globalindustrial.com/images/co/298541IN_dim.webp?t=1762638719316",
+    
   ]
 
   const handleScroll = (event) => {
