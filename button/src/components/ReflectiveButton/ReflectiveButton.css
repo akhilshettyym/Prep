@@ -1,0 +1,129 @@
+/* .reflective-btn {
+  position: relative;
+  width: 240px;
+  height: 70px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: none;
+  cursor: pointer;
+  background: #111;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.2),
+    0 20px 40px rgba(0, 0, 0, 0.4);
+}
+.reflective-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(2px) contrast(1.1) brightness(0.8);
+  transform: scaleX(-1);
+  opacity: 0.7;
+}
+.glass-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.35),
+    rgba(255, 255, 255, 0.05)
+  );
+  backdrop-filter: blur(6px);
+  pointer-events: none;
+}
+.btn-text {
+  position: relative;
+  z-index: 2;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+} */
+
+
+
+
+.reflective-btn {
+ position: relative;
+ width: 260px;
+ height: 72px;
+ border-radius: 14px;
+ overflow: hidden;
+ background: #0a0a0a;
+ color: white;
+ border: none;
+ cursor: pointer;
+ font-size: 18px;
+ font-weight: 600;
+ box-shadow:
+   inset 0 0 0 1px rgba(255,255,255,0.15),
+   0 30px 60px rgba(0,0,0,0.6);
+ transition: transform 0.15s ease;
+}
+/* Pressed state */
+.reflective-btn:active {
+ transform: translateY(2px);
+}
+/* Webcam */
+.reflective-video {
+ position: absolute;
+ inset: 0;
+ width: 100%;
+ height: 100%;
+ object-fit: cover;
+ transform: scaleX(-1);
+ opacity: 0.7;
+ filter: blur(2px) contrast(1.1);
+}
+/* Chromatic shine */
+.chromatic-layer {
+ position: absolute;
+ inset: 0;
+ pointer-events: none;
+ background:
+   linear-gradient(0deg, rgba(255,0,0,0.15), transparent 40%),
+   linear-gradient(90deg, rgba(0,255,255,0.15), transparent 40%);
+ mix-blend-mode: screen;
+}
+/* Gloss animation */
+.gloss-layer {
+ position: absolute;
+ inset: 0;
+ pointer-events: none;
+ background: linear-gradient(
+   120deg,
+   transparent 25%,
+   rgba(255,255,255,0.45),
+   transparent 75%
+ );
+ animation: glossMove 4s linear infinite;
+}
+
+/* Dent */
+.dent-effect {
+ position: absolute;
+ inset: 0;
+ pointer-events: none;
+ background: radial-gradient(
+   circle at var(--x) var(--y),
+   rgba(0,0,0,0.6) 0%,
+   rgba(0,0,0,0.4) 20%,
+   rgba(0,0,0,0.2) 40%,
+   transparent 60%
+ );
+ animation: dentFade 3s ease-out forwards;
+}
+@keyframes dentFade {
+ to {
+   opacity: 0;
+   filter: blur(6px);
+ }
+}
+/* Text */
+.btn-text {
+ position: relative;
+ z-index: 2;
+}
