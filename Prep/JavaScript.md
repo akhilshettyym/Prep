@@ -328,12 +328,15 @@ function lex() {
 }
 ```
 ## 13. IIFE(Immediately Invoked Function Expression) : Iffy
-// - function that is defined and executed immediately after its creation.
-// This pattern is primarily used to create a private scope for variables, preventing them from polluting the global scope and avoiding naming conflicts.
+- function that is defined and executed immediately after its creation.
+- This pattern is primarily used to create a private scope for variables, preventing them from polluting the global scope and avoiding naming conflicts.
+```js
 (function () {
 
 })();
-## . Currying :
+```
+---
+## 14. Currying :
 
 ---
 
