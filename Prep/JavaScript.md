@@ -327,6 +327,7 @@ function lex() {
     }
 }
 ```
+---
 ## 13. IIFE(Immediately Invoked Function Expression) : Iffy
 - function that is defined and executed immediately after its creation.
 - This pattern is primarily used to create a private scope for variables, preventing them from polluting the global scope and avoiding naming conflicts.
@@ -336,9 +337,95 @@ function lex() {
 })();
 ```
 ---
-## 14. Currying :
 
+## 14. Pass by References and Pass by Value :
+#### **Pass by Value**, meaning that when a variable is passed to a function, a copy of the value is created.
+- Changes made to the parameter within the function do not affect the original variable outside the function's scope.
+- The key difference lies in the type of value being passes : 
+1. Primitive types are passed as copy of the actual data.
+2. Non-Primitive types (objects) are passed as a copy of the object in memory.
+
+#### **Pass by Reference (objects)**,the value of the variable itself is a reference (an address) to the object's location in memory.
+- When this variable is passed to a function, a copy of this reference is created and given to the function's parameter. Both original variable and the function parameter point to the same object in memory.
 ---
 
-Lexical scoping
-Functions
+## 15. Currying :
+- Currying is a functional programming technique where a function that takes multiple arguments is transformed into a sequence of nested functions, each taking a single argument at a time.
+- Allows us to partially apply arguments to a function.
+- Instead of calling a function like **f(a, b, c)**, a curried version is called as **f(a)(b)(c)**.
+```js
+// Non-curried function - 
+const add = (a, b, c) => {
+  return a + b + c;
+};
+add(1, 2, 3); // returns 6
+
+// Curried version using arrow function -
+const curriedAdd = (a) => {
+  return (b) => {
+    return (c) => {
+      return a + b + c;
+    };
+  };
+};
+curriedAdd(1)(2)(3); // returns 6
+```
+---
+
+## 16. Infinite Currying Problem :
+- *Infinite Currying* : A functional programming technique used to create a function that can accept an indefinite number of arguments through chained function calls.
+- Standard currying transforms a function that takes multiple arguments into a sequence of nested functions, each taking a single, predefined argument. 
+- *Infinite Currying* - Extends this idea so the function keeps returning another function, accumulating arguments until it is explicitly told to stop.
+1. Accumulating Arguments : Using closures to maintain a running total or list of arguments across the function calls.
+2. Termination : Determining when to stop returning functions and return the final computed value.
+```js
+function sum(a) {
+  let currentSum = a;
+
+  function nextSum(b) {
+    if (b) {
+      currentSum += b;
+      return nextSum; // Returns the function again for chaining
+    } else {
+      return currentSum; // Returns the final sum if no argument is provided
+    }
+  }
+
+  // The valueOf method is called when JavaScript attempts to coerce the function 
+  // into a primitive value (e.g., during a comparison or when printed with a unary plus).
+  nextSum.valueOf = function() {
+    return currentSum;
+  };
+
+  return nextSum;
+}
+```
+---
+
+## 17. Memoization :
+- Memoization is an optimization technique in JS that speeds up applications by storing (caching) the results of expensive function calls and returning the cached result when the same inputs occur again.
+- This prevents redundant computations, improving performance at the cost of increased memory usage.
+- How memoization works :
+1. A cache is created (usually a JavaScript Object or Map) to store previously computed results.
+2. When the function is called, it first checks the cache to see if the result for the given arguments already exists.
+3. If the result is cached, the function returns the stored value immediately, skipping the expensive computation.
+4. If the result is not in the cache, the function performs the necessary calculation, stores the new result in the cache, and then returns the value.
+- Example : A common use case for memoization is optimizing recursive functions, such as the Fibonacci sequence calculation, which involves many redundant sub-problems. 
+Without memoization, calculating fibonacci(50) would involve recalculating smaller Fibonacci numbers (fibonacci(49), fibonacci(48), etc.) multiple times, leading to an exponential time complexity.
+```js
+function fibonacci(n, cache = {}) {
+  if (n in cache) {
+    return cache[n]; // Return cached result
+  }
+  if (n <= 1) {
+    return n;
+  }
+
+  // Compute and store the result in the cache before returning
+  cache[n] = fibonacci(n - 1, cache) + fibonacci(n - 2, cache);
+  return cache[n];
+}
+```
+---
+
+## 18. REST parameter :
