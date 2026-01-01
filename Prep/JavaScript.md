@@ -429,3 +429,54 @@ function fibonacci(n, cache = {}) {
 ---
 
 ## 18. REST parameter :
+- Rest parameters allow a function to accept an indefinite number of arguments as a single array. 
+- They are denoted by three dots (...) followed by a parameter name in the function definition. 
+- If we have many arguements then we will have to declare that many parameters, instead Use **REST** so that we can include every arguement.
+```js
+// Normally we do 
+function abcd(a, b, c, d){
+    console.log(a, b, c, d);
+}
+abcd(a, b, c, d);
+// We can do this for fewer arguments ... If there are more then we can use REST parameters.
+
+function abcd(a, b, c, ...val) {
+    console.log(a, b, c, val);
+}
+abcd(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+```
+- NOTE : When we use ... in parameters place then it is REST.
+- If we use it wrt arrays and objects then it is spread operator.
+---
+
+## 19. Spread Operators :
+- **Spread Operator ( ... )** expands an iterable (like an array or a string) or an object's properties into individual elements or key-value pairs. It is a powerful feature for writing clean and concise code, primarily used for **copying**, **merging**, and **passing data** flexibly.
+```js
+// Copying Arrays and Objects :
+const originalArray = [1, 2, 3];
+const copiedArray = [...originalArray]; // [1, 2, 3]
+
+const originalObject = { a: 1, b: 2 };
+const copiedObject = { ...originalObject }; // { a: 1, b: 2 }
+
+// Merging or Combining Data :
+const array1 = [1, 2];
+const array2 = [3, 4];
+const mergedArray = [...array1, ...array2]; // [1, 2, 3, 4]
+
+// Merging Objects :
+const obj1 = { a: 1, b: 2 };
+const obj2 = { b: 3, c: 4 };
+const mergedObject = { ...obj1, ...obj2 }; // { a: 1, b: 3, c: 4 }
+
+// Adding Elements or Properties :
+const numbers = [1, 2, 3];
+const newNumbers = [...numbers, 4, 5]; // [1, 2, 3, 4, 5]
+
+const user = { name: 'Alice', age: 30 };
+const updatedUser = { ...user, city: 'New York' }; // { name: 'Alice', age: 30, city: 'New York' }
+```
+---
+
+## 20. Ways to create Objects :
+-  There are several ways to create objects, each suitable for different use cases. The most common and modern approaches are : 
