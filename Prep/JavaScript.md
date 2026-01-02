@@ -481,7 +481,7 @@ const updatedUser = { ...user, city: 'New York' }; // { name: 'Alice', age: 30, 
 ## 20. Ways to create Objects :
 -  There are several ways to create objects, each suitable for different use cases. The most common and modern approaches are : 
 #### 1. Object Literals :
-- Simple and common way to createa single object is with object literal syntax which uses curly braces {} to define key-value pairs.
+Simple and common way to createa single object is with object literal syntax which uses curly braces {} to define key-value pairs.
 ```js
 const user = {
   firstName = "Akhil",
@@ -512,3 +512,49 @@ class User {
 const allUsers = new User("Akhil", "Shetty", 22);
 allUsers.showUsers();
 ```
+#### 3. Using Constructor Functions :
+Constructor functions were the standard way to create reusable object "blueprints". They are regular JS functions used with new keyword.
+```js
+function User(name, age) {
+  this.name = name;
+  this.age = age;
+  this.greet = function() {
+    return "Hello, my name is " + this.name;
+  };
+}
+const akhil = new User("Akhil", 22);
+console.log(akhil.name);  // Output: Akhil
+```
+#### 4. Using object.create() :
+The object.create() method creates a new object using an existing object as the prototype of the newly created object. This allows for explicit prototypal inheritance.
+```js
+const animalProto = {
+  type: "Invertebrate",
+  displayType() {
+    console.log(this.type);
+  }
+};
+
+const animal = Object.create(animalProto);
+animal.displayType(); // Output: Invertebrate
+
+const fish = Object.create(animalProto);
+fish.type = "Fish";
+fish.displayType(); // Output: Fish
+```
+#### 5. Using Factory Functions :
+Factory functions are simply functions that return s new object, without needing the new keyword. They are flexible alternative that can encapsulate object creation logic.
+```js
+function createUser(name, age) {
+  return {
+    name: name,
+    age: age,
+    greet() {
+      return `Hello, my name is ${this.name}`;
+    }
+  };
+}
+const user1 = createUser("Akhil", 22);
+console.log(user1.greet());   // Output: Hello, name is Akhil
+```
+
