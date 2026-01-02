@@ -557,4 +557,26 @@ function createUser(name, age) {
 const user1 = createUser("Akhil", 22);
 console.log(user1.greet());   // Output: Hello, name is Akhil
 ```
+---
+## 21. Generator Functions :
+- A special type of function that can pause their execution and resume later, allowing them to return multiple values sequentially, or produce values on demand. 
+- They are a powerful feature for creating custom iterators and managing asynchronous operations.
+1. *function* syntax* : Generator functions are defined using an asterisk (*) after the function keyword (e.g., function* myGenerator() {}).
+2.*yield keyword* : The yield keyword pauses the generator function's execution and returns a value to the caller. The function's state is preserved at this point.
+3. *Generator Object* : When a generator function is called, it does not execute immediately. Instead, it returns a special generator object that conforms to both the iterable and iterator protocols.
+4. *.next() method* : This method is called on the generator object to resume execution. It runs the code until the next yield (or return) statement is encountered. It returns an object with two properties: value (the yielded value) and done (a boolean indicating if the generator has finished).
+```js
+function* simpleGenerator() {
+  yield 'First value';
+  yield 'Second value';
+  return 'Done'; // A return statement ends the generator
+}
 
+const gen = simpleGenerator();
+
+console.log(gen.next()); // { value: 'First value', done: false }
+console.log(gen.next()); // { value: 'Second value', done: false }
+console.log(gen.next()); // { value: 'Done', done: true }
+console.log(gen.next()); // { value: undefined, done: true } (after completion)
+```
+---
