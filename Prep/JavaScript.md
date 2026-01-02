@@ -480,3 +480,35 @@ const updatedUser = { ...user, city: 'New York' }; // { name: 'Alice', age: 30, 
 
 ## 20. Ways to create Objects :
 -  There are several ways to create objects, each suitable for different use cases. The most common and modern approaches are : 
+#### 1. Object Literals :
+- Simple and common way to createa single object is with object literal syntax which uses curly braces {} to define key-value pairs.
+```js
+const user = {
+  firstName = "Akhil",
+  lastName = "Shetty",
+  age = 50,
+  fullName : function() {
+    return this.firstName + " " + this.lastName;
+  }
+};
+// console.log(user.firstName);    // Output : Akhil
+// console.log(user.fullName());   // Output : Akhil Shetty
+```
+#### 2. Using Classes :
+Classes, introduced in ECMAScript 2015(ES6), provide a cleaner and more structured way to create objects, especially when we want to create multiple objects of same type and handle inheritance.
+```js
+class User {
+  constructor(firstName, lastname, age) {
+    this.firstName = firstName;
+    this.lastName = lastName;
+    this.age = age;
+  }
+  showUsers() {
+    const users = `First Name :${this.firstName}, Last Name :${this.lastName}, age :${this.age}`;
+    console.log(users);
+  }
+}
+
+const allUsers = new User("Akhil", "Shetty", 22);
+allUsers.showUsers();
+```
