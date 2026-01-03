@@ -635,4 +635,37 @@ delayedMessage(done);
 // This message appears after 2 seconds.
 // Callback executed after delay.
 ```
+---
 
+## 24. Event Loops :
+- The event loop is a fundamental mechanism that enables JS to handle asynchronous operations and events in a non-blocking way, despite being a single-threaded language. It continuously monitors the program's components to orchestrate code execution efficiently and ensures the application remains responsive.
+#### Key Components :
+- The event loop works in tandem with several components of the JS runtime env.(browser or node).
+- *Call Stack* : A LIFO (Last-In, First-Out) data structure that tracks and executes synchronous function calls. When a function completes, it's popped off the stack.
+- *Web APIs (or Host Environment APIs)* : Provided by the browser or Node.js, these handle asynchronous tasks in the background, outside the main JavaScript thread. Examples include setTimeout(), network requests (fetch, XMLHttpRequest), and DOM events (click).
+*Task Queues* :
+- *Microtask Queue* : Holds higher-priority tasks, such as promise callbacks (.then(), .catch(), .finally()) and queueMicrotask() calls.
+- *Macrotask Queue (Callback/Task Queue)* : Holds lower-priority tasks like timer callbacks (setTimeout(), setInterval()) and most I/O and UI events.
+- *Event Loop* : The mechanism that continuously checks if the call stack is empty. If it is, the event loop moves completed tasks from the queues to the call stack for execution.
+```js
+console.log("Start");
+
+setTimeout(() => {
+  console.log("Timeout Callback");
+}, 0);
+
+Promise.resolve().then(() => {
+  console.log("Promise Microtask");
+});
+
+console.log("End");
+/*
+Start
+End
+Promise Microtask
+Timeout Callback
+*/
+```
+---
+
+## 25. 
