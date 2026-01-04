@@ -819,3 +819,30 @@ child.addEventListener('click', () => {
 2. **Bubbling Phase** : The event then propagates upward through all its parent elements in the DOM tree until it reaches the root (document or window). 
 - Event delegation capitalizes on this bubbling. A listener on the parent element "catches" events that originated from its descendants as they bubble up. Inside the listener, the event.target property is used to identify the specific child element that was initially clicked. 
 ---
+
+## 32. Type Coersion vs Conversion :
+### Type Coersion :
+- The automatic or implicit conversion of values from one data type to another during an operation. This behavior, due to JS being a weakly typed language, allows flexibility but can lead to unexpected results if the rules aren't understood.
+- Type coercion can be categorized into two main types:
+1. **Implicit Coercion** : JavaScript automatically converts data types behind the scenes to complete an operation. For example, adding a number to a string results in string concatenation, as the number is coerced into a string.
+2. **Explicit Coercion (Type Casting)** : The developer intentionally converts the value's type using built-in functions like Number(), String(), or Boolean().
+
+### Type Conversion :
+- Type conversion in JavaScript is the process of changing a value's data type, which happens either explicitly (manually by the developer) or implicitly (automatically by the JavaScript engine, also known as type coercion). 
+1. Explicit Type Conversion :
+Explicit conversion gives the developer control over the process using built-in functions.
+
+| Feature                  | `Type Conversion (Explicit)`                              | `Type Coercion (Implicit)`                                      |                                   |
+|--------------------------|------------------------------------|--------------------------------------------|----------------------------------------------|
+| **Control**                | Done manually by the developer.           | Done automatically by the JavaScript engine                            |                              |
+| **Methods**                | Uses built-in functions like Number(), String(), or Boolean()           | Occurs during operations involving different data types, such as arithmetic or loose equality comparisons (==)                            |                              |
+| **Predictability**       | Highly predictable as you define exactly how the conversion happens.            | Can lead to unexpected results if you are not familiar with JavaScript's specific coercion rules.                |                 |
+---
+
+## 33. Throttle :
+cguhcfb`
+---
+
+## 34. Debounce :
+fcvbukqln
+---
