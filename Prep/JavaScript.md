@@ -593,4 +593,46 @@ console.log(gen.next()); // { value: undefined, done: true } (after completion)
 - **Callback Queue**: Once a background operation is completed, its associated callback function is placed into a queue.
 - **Event Loop** : This continuous process monitors the call stack. If the call stack is empty (meaning all synchronous code has finished executing), the event loop pushes the first callback from the queue onto the call stack to be executed.
 #### Web Workers :
-- For truly CPU-intensive tasks that would otherwise block the main thread, modern env provide **Web Workers** (in browsers) or **Worker Threads** (in Node.js). These run in seperate, isolated threads and communicate with the main thread via message passing, which avoids the memory-sharing complexities of traditional multi-threading. The ability to use workers is a feature of the runtime env(like the browser or node.js), not the core JS Language spec itself.
+- For truly CPU-intensive tasks that would otherwise block the main thread, modern env provide **Web Workers** (in browsers) or **Worker Threads** (in Node.js). These run in seperate, isolated threads and communicate with the main thread via message passing, which avoids the memory-sharing complexities of traditional multi-threading. The ability to use workers is a feature of the runtime env(like the browser or node.js), not the core JS Language spesification itself.
+---
+
+## 23. Callbacks :
+- A callback in JS is a function passed as an argument to another function, which is then executed at a later time by the receiving function. This allows for the handling of events and asynchronous operations without blocking the main program thread.
+- Functions are considered **first-class citizens**, meaning they can be treated like any other value (assigned to variables, passed as arguments, etc). This makes callbacks possible.
+1. **Passing the functions** : A function is passed to a "higher-order function" as as argument.
+2. **Execution Timing** : The higher-order function contains logic that decides when to execute the callback, which could be immediately (synchronous) or at a later point(asynchronous).
+#### Use cases :
+Callbacks are fundamental to JavaScript and are widely used in various scenarios: 
+- *Asynchronous operations* : Such as fetching data from an API, reading files, or using setTimeout.
+- *Event handling* : Used extensively with event listeners (e.g., addEventListener) to run code when a user interacts with a page (like a button click).
+- *Array methods* : Built-in array methods like .map(), .filter(), .forEach(), and .sort() use callbacks to apply custom logic to each element. 
+```js
+// Synchronous Example :
+function greet(name, callback) {
+  console.log(`Hello, ${name}!`);
+  callback(); // The callback is executed immediately
+}
+function sayGoodbye() {
+  console.log("Goodbye!");
+}
+greet('Alice', sayGoodbye);
+// Output:
+// Hello, Alice!
+// Goodbye!
+// --------------------------------------------------------------
+// Asynchronous Example :
+function delayedMessage(callback) {
+  setTimeout(() => {
+    console.log("This message appears after 2 seconds.");
+    callback(); // The callback is executed later, after the delay
+  }, 2000);
+}
+function done() {
+  console.log("Callback executed after delay.");
+}
+delayedMessage(done);
+// Output after ~2 seconds:
+// This message appears after 2 seconds.
+// Callback executed after delay.
+```
+
