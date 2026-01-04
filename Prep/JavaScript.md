@@ -668,4 +668,129 @@ Timeout Callback
 ```
 ---
 
-## 25. 
+## 25. Callback and Microtask queue :
+### Callback queue (Macrotasks) :
+- The callback queue (also known as the task queue or macrotask queue) is a data structure in the JavaScript runtime environment that holds callback functions from completed asynchronous operations, such as setTimeout(), setInterval(), and DOM events, waiting to be executed. It operates on a First-In, First-Out (FIFO) basis. 
+##### - How the Callback Queue Works
+- The callback queue is part of a larger system called the event loop that allows JavaScript, a single-threaded language, to handle asynchronous operations without blocking the main execution thread.
+
+### Microtask queue :
+- The microtask queue in JavaScript is a high-priority queue, managed by the event loop, that holds tasks which need to be executed immediately after the currently running synchronous code finishes but before the next macrotask (regular task) or rendering update occurs. It operates on a first-in, first-out (FIFO) basis.
+
+### Macrotasks vs Microtasks :
+- In JavaScript's event loop, the primary distinction between the **microtask queue** (also known as the job queue) and the **callback queue** (or macrotask/task queue) is their priority and the types of tasks they handle. Microtasks have a higher priority and are processed entirely before the event loop moves on to the next task in the callback queue. 
+
+| Feature                  | `Microtask Queue`                              | `Macrotask Queue`                                      |                                   |
+|--------------------------|------------------------------------|--------------------------------------------|----------------------------------------------|
+| **Priority**                | Higher           | Lower                            |                              |
+| **Contents**                | Callbacks from Promises (.then(), .catch(), .finally()), async/await functions, and MutationObserver           | Callbacks from timers (setTimeout(), setInterval()), I/O operations, and user events (e.g., clicks)                            |                              |
+| **Processing**       | All microtasks are processed sequentially until the queue is empty, after the current synchronous code finishes and before the next macrotask begins            | The event loop processes one task from this queue per iteration, after the microtask queue has been entirely cleared                |                 |
+---
+
+## 26. Promises :
+- Promise is an **object** representing the **eventual outcome** (completion or failure) of an asynchronous operation. It serves as a placeholder for a value that is not yet available, enabling cleaner and more manageable asynchronous code compared to traditional callbacks.
+#### - Promise States :
+- A promise can be in one of three internal states: 
+1. *Pending* : The initial state; the operation is still in progress.
+2. *Fulfilled* : The operation completed successfully, and the promise has a resulting value.
+3. *Rejected* : The operation failed, and the promise has a reason (error) for the failure. 
+Once a promise is fulfilled or rejected, it is considered settled, and its state cannot change again.
+
+#### - Consuming Promises (Handling Outcomes) :
+You interact with the eventual result of a promise using specific methods attached to the promise object: 
+- *.then(onFulfilled, onRejected)* : This method appends handlers to the promise. The first function runs if the promise is fulfilled, and the second (optional) function runs if it is rejected. The .then() method itself returns a new promise, which makes chaining possible.
+- *.catch(onRejected)* : This is specifically for handling rejection cases and is essentially a then(null, onRejected). It provides a cleaner way to handle errors at the end of a chain.
+- *.finally(onFinally)* : This handler runs regardless of whether the promise was fulfilled or rejected, making it useful for cleanup operations (e.g., hiding a loading spinner). 
+
+#### - Creating Promises :
+- You typically consume promises returned by modern Web APIs (like the fetch() API). However, you can create a new promise manually using the Promise constructor to wrap older callback-based APIs or custom asynchronous logic:
+```js
+const myFirstPromise = new Promise((resolve, reject) => {
+  // Simulate an asynchronous operation (e.g., an API call)
+  setTimeout(() => {
+    const success = true; // In a real scenario, this would be determined by the operation's outcome
+    if (success) {
+      resolve("Success!"); // Call resolve() if the operation is successful
+    } else {
+      reject(new Error("Operation failed")); // Call reject() if an error occurs
+    }
+  }, 250);
+});
+
+myFirstPromise
+  .then((successMessage) => {
+    console.log(`Yay! ${successMessage}`);
+  })
+  .catch((error) => {
+    console.error(`Error: ${error.message}`);
+  });
+```
+#### - Advanced Promise Methods :
+The Promise object has several static methods for handling groups of promises: 
+- *Promise.all(iterable)* : Waits for all promises in an iterable to be fulfilled. If any promise is rejected, Promise.all immediately rejects.
+- *Promise.allSettled(iterable)* : Waits for all promises to be settled (fulfilled or rejected) and returns an array of their outcomes.
+- *Promise.any(iterable)* : Fulfills as soon as one of the promises in the iterable fulfills. It rejects only if all promises are rejected.
+- *Promise.race(iterable)* : Settles (fulfills or rejects) as soon as the first promise in the iterable settles.
+---
+
+## 27. Async and Await :
+- *async and await* are modern keywords used to handle *asynchronous operations* (like fetching data from an API or reading files) in a way that makes the code look and behave more like synchronous (sequential) code. They are essentially *"syntactic sugar"* built on top of Promises.
+#### - Concept :
+- **async function** : The async keyword is placed before a function declaration (or expression/arrow function) to declare it as asynchronous.
+- An *async* function always implicitly returns a Promise. Any value returned from the async function is automatically wrapped in a resolved promise.
+- It allows the use of the *await* keyword within its body.
+- **await keyword** :  The await keyword can only be used inside an async function (or at the top level of a JavaScript module).
+- It pauses the execution of the async function it is in until the Promise it is waiting for settles (either resolves or rejects).
+- When the promise resolves, await returns the resolved value, allowing it to be assigned to a variable in a synchronous-looking manner.
+- Crucially, it does not block the entire JavaScript program's main thread; the rest of the application can continue running other tasks in the event loop.
+```js
+function fetchData() {
+  fetch('https://api.example.com/data')
+    .then(response => response.json())
+    .then(data => {
+      console.log(data);
+    })
+    .catch(error => {
+      console.error('Error fetching data:', error);
+    });
+}
+fetchData();
+//----------------------------------------------------
+async function fetchDataAsync() {
+  try {
+    const response = await fetch('https://api.example.com/data'); // Wait for the fetch call to settle
+    const data = await response.json(); // Wait for the response to be parsed as JSON
+    console.log(data);
+  } catch (error) {
+    console.error('Error fetching data:', error); // Use standard try/catch for error handling
+  }
+}
+fetchDataAsync();
+```
+---
+
+## 28. Event Propagation :
+- Event Propagation describes how an event travels through the **Document Object Model (DOM)** when it is triggered on an element. This comprises of three phases : **Capturing**, **Targeting** and **Bubbling**.
+#### - The Three Phases of Event Propagation :
+- When a user interacts with a nested element (e.g., a button inside a div), the event doesn't just happen at that single element; it follows a complete path through the DOM tree. 
+1. **Capturing Phase** : The event starts at the root of the DOM (the window object) and travels downward through the ancestor elements to the target element. Event listeners can be set to execute during this "trickling" phase by passing true as the third argument to the addEventListener() method.
+2. **Target Phase** : The event reaches the actual element where the event occurred (the target element). Any event listeners attached to the target element itself are executed in this phase.
+3. **Bubbling Phase** : After the target phase, the event travels back up the DOM tree, from the target element to the root. This is the default behavior for most events, and event listeners are typically executed during this phase (when the third argument of addEventListener() is false or omitted). 
+#### - Controlling Event Propagation :
+- You can manage the flow of events using methods on the event object that is passed to the event handler function. 
+- **event.stopPropagation()** : This method stops the event from proceeding to the next phase (*e.g., stops bubbling up to parent elements or trickling down further*). Other handlers on the current element will still run.
+- **event.stopImmediatePropagation()** : This method not only prevents the event from propagating further up or down the DOM tree, but also stops any other event handlers attached to the same element from being executed.
+- **event.preventDefault()** : This method prevents the default behavior associated with the event (*e.g., stops a form from submitting or a link from navigating*), but it does not stop the event from propagating through the DOM. 
+### Event Delegation :
+- A common pattern that leverages event bubbling is event delegation. Instead of attaching an event listener to every single child element, you can attach a single listener to a common parent element. The parent listener can then use the event.target property to identify which child element was the actual source of the event and handle it accordingly. This is more efficient for performance and managing dynamic lists of elements
+---
+
+## 29. Event Bubbling :
+
+---
+
+## 30. Event Capturing :
+---
+
+## 31. Event Stop Propagation :
+---
