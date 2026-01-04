@@ -781,16 +781,41 @@ fetchDataAsync();
 - **event.stopPropagation()** : This method stops the event from proceeding to the next phase (*e.g., stops bubbling up to parent elements or trickling down further*). Other handlers on the current element will still run.
 - **event.stopImmediatePropagation()** : This method not only prevents the event from propagating further up or down the DOM tree, but also stops any other event handlers attached to the same element from being executed.
 - **event.preventDefault()** : This method prevents the default behavior associated with the event (*e.g., stops a form from submitting or a link from navigating*), but it does not stop the event from propagating through the DOM. 
-### Event Delegation :
-- A common pattern that leverages event bubbling is event delegation. Instead of attaching an event listener to every single child element, you can attach a single listener to a common parent element. The parent listener can then use the event.target property to identify which child element was the actual source of the event and handle it accordingly. This is more efficient for performance and managing dynamic lists of elements
 ---
 
 ## 29. Event Bubbling :
+- Event bubbling is a JavaScript mechanism where an event triggered on a specific element (the target) also fires on all of its ancestor elements, up the Document Object Model (DOM) tree to the root. This process is the default behavior for most events in modern browsers.
+```html
+<!-- HTML -->
+<div id="parent">
+  <button id="child">Click me!</button>
+</div>
+```
+```js
+// JS
+const parent = document.getElementById('parent');
+const child = document.getElementById('child');
 
+parent.addEventListener('click', () => {
+  console.log('Parent clicked');
+});
+
+child.addEventListener('click', () => {
+  console.log('Child clicked');
+});
+```
+#### - Controlling Bubbling :
+- *event.stopPropagation()* : This method, called within an event handler, prevents the event from propagating further up the DOM tree. In the example above, calling event.stopPropagation() inside the child's click handler would prevent the parent's handler from running.
+- *event.stopImmediatePropagation()* : This method stops the event from bubbling up the DOM and also prevents any other listeners on the same current element from being called. 
 ---
 
 ## 30. Event Capturing :
+- Event capturing is the first phase of the DOM event propagation mechanism where an event is triggered on the outermost ancestor elements first and then flows down the hierarchy to the target element. It is rarely used and is disabled by default.
 ---
 
-## 31. Event Stop Propagation :
+## 31. Event Delegation :
+- A common pattern that leverages event bubbling is event delegation. Instead of attaching an event listener to every single child element, you can attach a single listener to a common parent element. The parent listener can then use the event.target property to identify which child element was the actual source of the event and handle it accordingly. This is more efficient for performance and managing dynamic lists of elements.
+1. **Target Phase** : The event first reaches the actual element where it occurred.
+2. **Bubbling Phase** : The event then propagates upward through all its parent elements in the DOM tree until it reaches the root (document or window). 
+- Event delegation capitalizes on this bubbling. A listener on the parent element "catches" events that originated from its descendants as they bubble up. Inside the listener, the event.target property is used to identify the specific child element that was initially clicked. 
 ---
