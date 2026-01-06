@@ -893,6 +893,18 @@ document.querySelector("input").addEventListener("input", debounce(function () {
 ```
 ---
 
-## 34.  :
-fcvbukqln
+## 34. How JS parses and compiles the code step by step :
+- fcvbukqln
+---
+
+## 35. If a microtask has a function which continuously puts its return function in a microtask queue infinitely, how to handle this :
+- ytvkebcjlnke
+---
+
+## 36. First class functions :
+- kuglhnjm
+---
+
+## 37. Call, Apply and Bind, Usage :
+- trxcvkyubn
 ---
