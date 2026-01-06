@@ -894,7 +894,19 @@ document.querySelector("input").addEventListener("input", debounce(function () {
 ---
 
 ## 34. How JS parses and compiles the code step by step :
-- fcvbukqln
+- The JavaScript engine processes code through a series of steps involving parsing, compilation, and execution. This ensures the human-readable source code is ultimately converted into efficient machine code that the computer's processor can understand and run.
+#### Step-by-Step Process
+##### 1. Parsing (Syntax Analysis) :
+- **Lexical Analysis (Tokenization)** : The engine first reads the raw code character by character and breaks it down into small, meaningful pieces called tokens (e.g., const, sum, =, 5, +, 7, ; are all tokens).
+- **Syntax Analysis (AST Generation)** : The engine then uses these tokens to build a tree-like structure called an Abstract Syntax Tree (AST). This tree represents the grammatical and hierarchical structure of the code. During this stage, the parser also performs early error checking to ensure the code follows JavaScript's syntax rules. If any syntax errors are found (e.g., a missing bracket), the process stops, and an error is thrown.
+##### 2. Compilation :
+- **Bytecode Generation** : The AST is used to generate bytecode, which is a lower-level, machine-independent representation of the code. Modern JavaScript engines, like V8's Ignition interpreter, quickly produce and execute this bytecode to start running the code immediately.
+- **Just-In-Time (JIT) Optimization** : JavaScript engines use JIT compilation, which combines interpretation and compilation. As the bytecode runs, a profiler monitors the code, identifying "hot code" (functions or blocks that are executed frequently).
+- **Machine Code Generation** : An optimizing compiler (like V8's TurboFan) takes the hot code and compiles it into highly optimized native machine code, which runs much faster than the initial bytecode.
+- **Deoptimization** : If assumptions made during optimization turn out to be false at runtime (e.g., a variable type changes unexpectedly), the engine deoptimizes the code and reverts to the slower bytecode version to ensure correct execution.
+##### 3. Execution :
+- **Execution Context Creation** : The code finally runs within an execution context, which is the environment where JavaScript code operates. This involves creating a memory heap to store variables and objects, and using a call stack to manage the order of function calls.
+- **Running the Code** : The engine steps through the bytecode (or optimized machine code) in the call stack, performs the operations, and manages memory using garbage collection. 
 ---
 
 ## 35. If a microtask has a function which continuously puts its return function in a microtask queue infinitely, how to handle this :
