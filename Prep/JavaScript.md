@@ -581,3 +581,9 @@ console.log(gen.next()); // { value: 'Done', done: true }
 console.log(gen.next()); // { value: undefined, done: true } (after completion)
 ```
 ---
+
+## 22. JS single threaded language :
+- JavaScript is fundamentally a single-threaded language in its core execution model. This means it has a single call stack and can execute only one operation at a time on its main thread.
+#### Core concept : Single Threaded Execution :
+- The single-threaded nature was a deliberate design choice, primarily to simplify programming for web browsers, especially when manipulating the **Document Object Model(DOM)**. A multi-threaded approach to DOM manipulation would introduce complexities like **race conditions** and **synchronization issues**, leading to unpredictable behavior and bugs.
+- In a single-threaded environment, tasks are processed sequentially. If a synchronous task takes a long time(e.g., a heavy computation or I/O operation without the proper handling), it "blocks" the main thread, making the entire appliaction or web page unresponsive.
