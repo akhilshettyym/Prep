@@ -558,6 +558,7 @@ const user1 = createUser("Akhil", 22);
 console.log(user1.greet());   // Output: Hello, name is Akhil
 ```
 ---
+
 ## 21. Generator Functions :
 - A special type of function that can pause their execution and resume later, allowing them to return multiple values sequentially, or produce values on demand. 
 - They are a powerful feature for creating custom iterators and managing asynchronous operations.
