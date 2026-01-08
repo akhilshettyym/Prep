@@ -955,9 +955,94 @@ function animateLoop() {
 ---
 
 ## 36. First class functions :
-- kuglhnjm
+- In JavaScript, a first-class function is simply a function that is treated like any other variable or value. This means functions are "first-class citizens" and can be used in all the same ways as data types like numbers, strings, or objects, without any restrictions. 
+Specifically, this capability allows you to perform the following operations with functions:
+- **Assign to a variable** : You can store a function as a value in a variable, object property, or array element.
+```js
+const sayHello = function() {
+  console.log("Hello!");
+};
+sayHello(); // Invoke it using the variable
+```
+- **Pass as an argument** : A function can be passed as an argument (often called a callback function) to other functions. This ability enables the use of higher-order functions like map(), filter(), and reduce() in JavaScript.
+```js
+function logMessage(messageFunction) {
+  console.log(messageFunction());
+}
+logMessage(sayHello); // Pass sayHello as an argument
+```
+- **Return from another function** : A function can generate and return a new function as a result. This concept is crucial for creating closures and function factories.
+```js
+function createGreeter(name) {
+  return function() {
+    console.log(`Hello, ${name}!`);
+  };
+}
+const greetJohn = createGreeter("John");
+greetJohn(); // Calls the returned function
+```
 ---
 
 ## 37. Call, Apply and Bind, Usage :
-- trxcvkyubn
+- In JavaScript, call(), apply(), and bind() are methods used to explicitly set the value of the this keyword inside a function. The key distinctions lie in how they handle function execution and argument passing.
+
+| Method                   | Execution Timing                              | Argument Passing                                      |                                   |
+|--------------------------|------------------------------------|--------------------------------------------|----------------------------------------------|
+| **call()**                | Immediately invokes the function.           | Accepts arguments individually, separated by commas.                            |                              |
+| **apply()**                | Immediately invokes the function.	           | Accepts arguments as a single array (or array-like object).                            |                              |
+| **bind()**       | Does not execute the function immediately; it returns a new function that can be invoked later.            | Accepts arguments individually (similar to call()), which are pre-set when the new function is created.               |                 |
+#### 1. call() :
+- *Purpose* : Runs a function right away and lets you specify the this value as the first argument, followed by subsequent arguments one by one.
+- *Use Case* : Useful for function borrowing, where one object can use a method belonging to another object.
+```js
+const person = {
+  fullName: function(city, country) {
+    return this.firstName + " " + this.lastName + ", " + city + ", " + country;
+  }
+};
+const person1 = {
+  firstName: "Akhil",
+  lastName: "Shetty"
+};
+// The function is called immediately, with person1 as 'this'
+console.log(person.fullName.call(person1, "Mangalore", "DK")); 
+// Output: AKhil Shetty, Mangalore, DK
+```
+
+#### 2. apply() :
+- *Purpose* : Nearly identical to call(), but all arguments after the this value are passed in as an array.
+- *Use Case* : Excellent when you have an array of data and want to pass its elements as individual arguments to a function, such as finding the maximum value in an array using Math.max.apply(null, array). The ES6 spread operator (...) often provides a more modern alternative to this specific use case.
+```js
+const person = {
+  fullName: function(city, country) {
+    return this.firstName + " " + this.lastName + ", " + city + ", " + country;
+  }
+};
+const person2 = {
+  firstName: "Akhil",
+  lastName: "Shetty"
+};
+const args = ["Mangalore", "DK"];
+// The function is called immediately, with person2 as 'this' and the array as arguments
+console.log(person.fullName.apply(person2, args));
+// Output: Akhil Shetty, Mangalore, dK
+```
+
+#### 3. bind()
+- *Purpose* : Creates a new, permanently bound function that you can execute later. The original function remains unchanged.
+- *Use Case* : Primarily used for scenarios like event handlers or callbacks, where a function needs to be passed but executed later in a specific this context. Arrow functions can often serve a similar purpose in modern JavaScript.
+```js
+const user = {
+  name: "Akhil",
+  greet: function() {
+    console.log(`Hello, I'm ${this.name}!`);
+  }
+};
+// Creates a new function with 'user' as the permanent 'this' value
+const boundGreet = user.greet.bind(user); 
+
+// Call the new function later; it remembers the correct 'this'
+setTimeout(boundGreet, 1000); 
+// Output after 1 second: Hello, I'm Akhil!
+```
 ---
