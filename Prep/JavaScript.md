@@ -910,7 +910,48 @@ document.querySelector("input").addEventListener("input", debounce(function () {
 ---
 
 ## 35. If a microtask has a function which continuously puts its return function in a microtask queue infinitely, how to handle this :
-- ytvkebcjlnke
+- In JavaScript, if a microtask's function continuously queues itself onto the microtask queue, it creates an infinite loop that can starve the main thread of execution. This is a common pattern for causing the browser to become unresponsive. 
+- Here's how this behavior is handled and what you can do about it:
+#### - How JavaScript Handles This :
+JavaScript's event loop prioritizes microtasks (like Promises, queueMicrotask(), and MutationObserver callbacks) which all execute before the next macrotask (like setTimeout, setInterval, or user interface rendering) can run. 
+- **Starvation** : When an infinite microtask loop occurs, the browser is stuck in a cycle of processing microtasks and never reaches the macrotask queue. This prevents UI updates, user input processing, and other scheduled tasks from happening.
+- **Browser Crash/Unresponsiveness** : Modern browsers are built to detect such infinite loops or excessive computation. If a script runs for too long without yielding to the main event loop, the browser may:
+1. Display a warning asking the user if they want to stop the script.
+2. Freeze the specific tab to protect the overall browser and operating system.
+3. Force close the tab if it becomes completely unresponsive. 
+#### How to Handle (i.e., Fix) This Situation in Your Code :
+- The core issue is that the function is not yielding control back to the main event loop. You need to break up the continuous process into smaller, manageable chunks that allow the browser time to breathe between executions. 
+- You can achieve this using macrotasks:
+1. **Use setTimeout or setInterval** : Move the repetitive code into a setTimeout with a delay of 0 (or a small number like 10ms). This places the next execution of the function in the macrotask queue, which runs after the current batch of microtasks has finished and after the browser has had a chance to render UI updates and process user input.Incorrect *(Infinite Microtask Loop)* :
+```js
+function microtaskLoop() {
+    console.log('Still in microtasks!');
+    queueMicrotask(microtaskLoop); // Adds another microtask immediately
+}
+// Starts the infinite loop:
+// microtaskLoop();
+
+// Correct (Yields to Event Loop):
+function macrotaskLoop() {
+    // Do some work here...
+    console.log('Running a chunk of work...');
+
+    // Schedule the next chunk as a macrotask
+    setTimeout(macrotaskLoop, 0); 
+}
+// Starts the balanced loop:
+// macrotaskLoop();
+```
+2. **Use requestAnimationFrame for UI work** : If the repetitive process involves animations or visual updates, use *requestAnimationFrame* instead of *setTimeout(..., 0)*. This is optimized for smooth visual performance and schedules the callback before the next repaint.
+```js
+function animateLoop() {
+    // Update elements, etc.
+    console.log('Animating...');
+
+    requestAnimationFrame(animateLoop);
+}
+// animateLoop();
+```
 ---
 
 ## 36. First class functions :
