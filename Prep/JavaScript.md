@@ -1046,3 +1046,41 @@ setTimeout(boundGreet, 1000);
 // Output after 1 second: Hello, I'm Akhil!
 ```
 ---
+
+## 38. <u>Maplimit</u> :
+- Maplimit is not a built-in function but a common pattern or utility function used to manage the concurrency of asynchronous operations (like API calls) when processing an array of items.
+#### - Purpose of maplimit :
+- The standard *Array.prototype.map()* method is synchronous and will start processing all items in an array at once. If the mapping function performs an asynchronous task, like fetching data over a network, this can lead to issues such as :
+- *Rate limiting* by the API service.
+- *Network timeouts* or memory issues due to too many simultaneous connections. 
+- A mapLimit function addresses this by ensuring that a maximum number of async operations run simultaneously, specified by a limit parameter.
+- Usage : While you can implement mapLimit yourself (often a good coding exercise), it is commonly available in utility libraries such as async.js or modern-async.
+```js
+import { mapLimit } from 'modern-async'; // Or your custom implementation
+
+// A function that returns a promise and takes some time
+const asyncTask = async (item) => {
+    await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate delay
+    return item * 2;
+};
+
+const data = [1, 2, 3, 4, 5, 6];
+const concurrencyLimit = 2; // Only 2 tasks run at a time
+
+// Use mapLimit to process data with the concurrency limit
+mapLimit(data, concurrencyLimit, asyncTask)
+    .then(results => console.log(results)) // Results: [2, 4, 6, 8, 10, 12]
+    .catch(err => console.error(err));
+```
+---
+
+## 39. Variable Shadowing :
+- ucvygbhjn
+---
+
+## 40. Static in JS Class :
+- ghbnjm
+---
+
+## 41. Undefined, not-defined and null :
+- cvghb
