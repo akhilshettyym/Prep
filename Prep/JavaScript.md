@@ -1075,7 +1075,40 @@ mapLimit(data, concurrencyLimit, asyncTask)
 ---
 
 ## 39. Variable Shadowing :
-- ucvygbhjn
+- Variable shadowing in JavaScript occurs when a variable declared in an inner scope has the same name as a variable in an outer scope, causing the inner variable to hide or override the outer one within that inner scope.
+#### How It Works
+- When a variable with the same name is declared in a nested scope (e.g., inside a function or block), it shadows the outer variable. 
+- Inside the inner scope, any reference to that variable name will access the inner variable, not the outer one. 
+- The outer variable remains accessible outside the inner scope.
+```js
+let x = 10; // Outer variable
+function example() {
+  let x = 20; // Inner variable shadows the outer 'x'
+  console.log(x); // Outputs: 20
+}
+example();
+console.log(x); // Outputs: 10 (outer 'x' is unaffected)   
+```
+### Scope Types and Shadowing :
+- var: Function-scoped. Can shadow outer variables within a function, but due to hoisting, can lead to unexpected behavior. 
+- let and const: Block-scoped. Can shadow outer variables within blocks (e.g., if, for, while), and are more predictable.
+```js
+let x = 10;
+if (true) {
+  let x = 20; // Shadows outer 'x' in this block
+  console.log(x); // 20
+}
+console.log(x); // 10 (outer 'x' is still accessible)   
+```
+### Illegal Shadowing :
+- Illegal shadowing occurs when you try to use var to declare a variable in a block that already has a let or const variable with the same name. 
+- Since var is hoisted to the global scope, this creates a SyntaxError.
+```js
+let a = 200;
+{
+  var a = 10; // SyntaxError: Cannot access 'a' before initialization
+}
+```
 ---
 
 ## 40. Static in JS Class :
