@@ -1112,7 +1112,39 @@ let a = 200;
 ---
 
 ## 40. Static in JS Class :
-- ghbnjm
+- Static in JavaScript classes refers to properties or methods that belong to the class itself, not to any instance created from the class. 
+- Static methods are defined using the static keyword and can be called directly on the class, not on instances. 
+- Example: *MyClass.staticMethod()*
+- They are often used for utility functions, such as creating or cloning objects, or performing operations that don’t require instance-specific data. 
+- Static properties are also declared with static and are shared across all instances.They are useful for storing caches, fixed configurations, or class-level data that shouldn’t be duplicated per instance. 
+- **Inheritance** : Static methods and properties are inherited by subclasses, and can be accessed via the subclass name or super keyword. 
+- **Access** : Static members cannot be accessed via this in non-static methods. Use *ClassName.staticMethod()* or *this.constructor.staticMethod()*.
+this inside a static method refers to the class constructor, not an instance. 
+- Static initialization blocks (introduced in 2023) allow complex initialization logic during class evaluation, including use of try...catch, access to private fields, and execution in order with static field initializers.
+```js
+// Syntax :
+class ClassWithStatic {
+  static staticField;
+  static staticFieldWithInitializer = value;
+  static staticMethod() {
+    // …
+  }
+}
+
+class ClassWithStaticMethod {
+  static staticProperty = "someValue";
+  static staticMethod() {
+    return "static method has been called.";
+  }
+  static {
+    console.log("Class static initialization block called");
+  }
+}
+console.log(ClassWithStaticMethod.staticProperty);
+// Expected output: "someValue"
+console.log(ClassWithStaticMethod.staticMethod());
+// Expected output: "static method has been called."
+```
 ---
 
 ## 41. Undefined, not-defined and null :
