@@ -1148,4 +1148,29 @@ console.log(ClassWithStaticMethod.staticMethod());
 ---
 
 ## 41. Undefined, not-defined and null :
-- cvghb
+- **Undefined** means a variable has been declared but not assigned a value.  It is the default value for declared variables that lack an initial value. *For example*:
+```js
+let name;
+console.log(name); // undefined
+// It is a primitive type in JavaScript and is automatically assigned by the language.
+```
+- **Not defined** refers to a variable that has never been declared using var, let, or const.  Accessing such a variable throws a *ReferenceError*:
+```js
+console.log(age); // ReferenceError: age is not defined 
+// Even though typeof undeclaredVar returns "undefined", the variable itself is not defined in the scope.  
+```
+- **Null** is an explicitly assigned value meaning "no value" or "empty".  It is a primitive value used to indicate intentional absence of a value. Unlike undefined, null is assigned manually:
+```js
+let user = null;
+console.log(user); // null
+// Despite being a primitive, typeof null returns "object" — a historical quirk in JavaScript.
+```
+#### *Key Differences* :
+- *Undefined* : Variable declared but no value assigned. 
+- *Not defined* : Variable not declared at all — causes ReferenceError. 
+- *Null* : Explicitly assigned to represent "no value".
+#### *Equality Behavior* :
+- null == undefined → true (loose equality)
+- null === undefined → false (strict equality)
+- null is falsy, but not equal to other falsy values like 0 or "".
+---
