@@ -1310,3 +1310,5 @@ obj.regularFunction();
 // Regular: Object context
 // Arrow: Object context
 ```
+
+## 44. 
