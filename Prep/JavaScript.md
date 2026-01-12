@@ -1222,7 +1222,7 @@ async function renderUserDashboard(userId) {
 ```
 - **Modularization and Named Functions** : Breaking code into smaller, reusable, named functions can also help to reduce nesting levels and improve organization.
 ---
-## 43. 'this' :
+## 43. this :
 - In JavaScript, the *this keyword* refers to the *object* that is executing the *current function*. The key concept to grasp is that its value is determined dynamically at runtime based on how a function is invoked, not where it is defined (with the exception of arrow functions). 
 - Here is how this behaves in different contexts:
 1. **Global Context** :
@@ -1311,4 +1311,17 @@ obj.regularFunction();
 // Arrow: Object context
 ```
 
-## 44. 
+## 44. Async vs defer :
+- The async and defer attributes are used in HTML *script* tags to load external JavaScript files without blocking the browser's HTML parsing, but they differ in when the scripts are executed and their execution order.
+
+| Feature                   | async Attribute                              | defer Attribute                              |                                   |
+|--------------------------|------------------------------------|--------------------------------------------|----------------------------------------------|
+| **Download**                | Asynchronously (in parallel with HTML parsing).           | Asynchronously (in parallel with HTML parsing)                            |                              |
+| **Execution Timing**                | Executes as soon as it's downloaded, potentially blocking HTML parsing if it finishes before the DOM is ready.         | Executes only after the HTML has been fully parsed, but before the DOMContentLoaded event fires.                          |                              |
+| **Execution Order**       | Not guaranteed to execute in the order they appear in the HTML. Execution is "load-first".            | Guaranteed to execute in the order they appear in the HTML document.               |
+| **DOM Access**       | May run before the DOM is ready, potentially causing errors if it tries to access page elements.            | Always runs after the DOM is ready, making it safe for DOM manipulation.               |
+| **Best Use Case**       | Independent scripts with no dependencies (e.g., analytics, ads).            | Scripts that depend on the DOM or other scripts (e.g., initialization code, UI libraries).               |                 |
+#### When to Use Which :
+- Use async for scripts that are self-contained and don't rely on the order of other scripts or the full availability of the DOM. Examples include third-party tracking or ad scripts.
+- Use defer for most of your own application's JavaScript. It ensures that all necessary HTML is parsed and that scripts run in the correct order, without blocking the initial rendering of the page content.
+---
