@@ -1449,3 +1449,23 @@ Examples:
 - 0 == false returns true	0 === false returns false
 - null == undefined returns true	null === undefined returns false
 ---
+
+## 49. Strict Mode :
+- JavaScript's **strict mode** is an opt-in feature that enforces a more restricted and robust set of rules for writing code. Introduced in ECMAScript 5 (ES5), it helps developers avoid common mistakes, makes code safer, and improves performance by changing some silent errors into explicit errors and prohibiting certain error-prone syntax. 
+#### How to Enable Strict Mode :
+- You can apply strict mode to an entire script or an individual function. 
+1. **For an entire script** : Add the exact statement "use strict"; (or 'use strict';) as the very first statement in your file, before any other statements or comments.
+2. **For a function** : Place "use strict"; as the first statement within the function's body. 
+##### Note that JavaScript modules and class bodies are automatically in strict mode by default, so the directive isn't necessary in those contexts. 
+- Key Changes and Benefits - Strict mode modifies both syntax and runtime behavior, primarily to catch errors that would otherwise fail silently or lead to unpredictable behavior.
+
+| Feature                   | Sloppy Mode Behavior (Default)                              | Strict Mode Behavior                              |                                   |
+|--------------------------|------------------------------------|--------------------------------------------|----------------------------------------------|
+| **Undeclared Variables**                | Accidentally creates a global variable (e.g., x = 10;).           | Throws a ReferenceError.                            |                              |
+| **this in Functions**                | this defaults to the global object (window in browsers).         | this is undefined when a function is called without an explicit context, preventing accidental global object modification.                          |                              |
+| **Silent Failures**       | Silently ignores attempts to assign to read-only properties, get-only properties, or non-extensible objects.            | Throws a TypeError in such cases, making bugs easier to find.               |
+| **Duplicate Parameters**       | Allows functions with duplicate parameter names, ignoring all but the last one.            | Throws a SyntaxError.               |
+| **with statement**       | The with statement is allowed.           | The with statement is a SyntaxError due to its unpredictable performance and behavior.               |
+| **eval()**       | Variables declared inside eval() affect the surrounding scope.          | Variables declared inside eval() are scoped only to the eval() environment.               |
+| **Octal Literals**       | Allows legacy octal syntax (e.g., 010).          | Throws a SyntaxError for legacy octal syntax, which is often confusing for developers.               |                 |
+---
