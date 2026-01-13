@@ -1408,3 +1408,44 @@ second();
 ##### Stack Overflow Error :
 - A "stack overflow" error occurs when the call stack runs out of memory due to too many function calls pushed onto it without being popped off. This is commonly caused by infinite or excessively deep recursion (a function repeatedly calling itself without a base case or exit point).
 ---
+
+## 47. Garbage Collection :
+- JavaScript uses automatic garbage collection to manage memory, freeing developers from *manual allocation and deallocation* like in languages such as C. The process automatically identifies and reclaims memory occupied by objects that are no longer "reachable" or in use by the program. 
+#### How Garbage Collection Works :
+- Modern JavaScript engines, such as V8 (used in Chrome and Node.js), primarily use the **mark-and-sweep** algorithm and its optimizations to manage memory. 
+1. **Mark Phase** : The garbage collector starts from "roots"—global variables, currently executing functions, and other system references—and recursively traverses all objects reachable from these roots. It marks all reachable objects as "alive" or in use.
+2. **Sweep Phase** : The collector then scans the entire memory (heap) and reclaims the memory used by any objects that were not marked as reachable. 
+- A key advantage of mark-and-sweep is that it can correctly handle circular references (where two objects reference each other), unlike the older, less common reference-counting algorithm, which would fail to collect them, causing memory leaks. 
+
+#### Optimizations (Generational GC) :
+- To improve performance, modern engines implement optimizations, such as generational garbage collection. 
+1. **Young Generation** : Most objects in JavaScript are short-lived. New objects are allocated here and are checked frequently by a fast process called *scavenge*.
+2. **Old Generation** : Objects that survive multiple collections in the young generation are moved to the old generation, where they are scanned less often by a more thorough mark-and-sweep process. 
+#### Best Practices to Avoid Memory Leaks :
+- While automatic, certain coding practices can inadvertently prevent the garbage collector from reclaiming memory, leading to memory leaks. 
+1. **Avoid Accidental Globals** : Variables assigned without let, const, or var in non-strict mode become global, staying in memory for the entire application lifecycle.
+2. **Clean up Event Listeners** : Always remove event listeners using removeEventListener() when they are no longer needed, especially if the associated DOM element might be removed.
+3. **Manage Timers** : Clear intervals and timeouts using clearInterval() and clearTimeout() when they are finished.
+4. **Use WeakMap and WeakSet for Caching** : These data structures hold weak references to objects, allowing the garbage collector to remove the associated objects and their data if nothing else is strongly referencing them.
+5. **Dereference Large Objects** : Setting a variable that holds a reference to a large object to null can explicitly signal that the object is no longer needed, making it eligible for the next GC run.
+---
+
+## 48. Equality (===) :
+- The **===** in JavaScript is the **strict equality operator**. It compares two values for equality, considering both the value and the type without performing any type conversion (type coercion). 
+#### How Strict Equality (===) Works :
+- The === operator returns true only if the operands are of the same type and have the same value. Otherwise, it returns false. 
+Examples:
+- 5 === 5 returns true (same value and same type: Number).
+- '5' === 5 returns false (same value, but different types: String vs. Number).
+- true === 1 returns false (different types: Boolean vs. Number).
+- null === undefined returns false (different types).
+- {} === {} returns false because objects are compared by reference, and these are two distinct objects in memory.
+- NaN === NaN returns false (a special case where NaN is not strictly equal to anything, including itself). 
+#### Comparison with Loose Equality (==) :
+- JavaScript also has the loose equality operator (==). The key difference is that == performs type coercion, meaning it attempts to convert the values to a common type before comparison. 
+- == (Loose Equality) 	=== (Strict Equality)
+- Performs type coercion (automatic type conversion).	No type coercion.
+- '5' == 5 returns true	'5' === 5 returns false
+- 0 == false returns true	0 === false returns false
+- null == undefined returns true	null === undefined returns false
+---
