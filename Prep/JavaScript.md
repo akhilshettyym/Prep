@@ -1325,3 +1325,32 @@ obj.regularFunction();
 - Use async for scripts that are self-contained and don't rely on the order of other scripts or the full availability of the DOM. Examples include third-party tracking or ad scripts.
 - Use defer for most of your own application's JavaScript. It ensures that all necessary HTML is parsed and that scripts run in the correct order, without blocking the initial rendering of the page content.
 ---
+
+## 45. Execution Context :
+- An *Execution Context (EC)* is the abstract environment created by the JavaScript engine where code is evaluated and executed. Everything in JavaScript happens inside an execution context, and it is a fundamental concept for understanding how the language manages variables, functions, and the this keyword. 
+- The JavaScript engine uses a call stack to manage all the execution contexts in a **Last-In-First-Out (LIFO)** order. 
+##### Types of Execution Contexts : There are primarily two types of execution contexts:
+#### 1. Global Execution Context (GEC) : 
+- This is the default context created when the JavaScript engine first loads a script file. It represents the global scope, and any code not inside a function is executed here. There is only one GEC for an entire program.
+- In a web browser, the global object is the window object.
+- In Node.js, the global object is global.
+#### 2. Function Execution Context (FEC): 
+- A new FEC is created every time a function is called or invoked. Each function gets its own unique context, which includes its local variables, arguments, and scope. When the function finishes executing, its context is removed (popped off) from the call stack, and control returns to the previous context. 
+- A third type, the Eval Function Execution Context, is created when code is executed inside the eval() function, but it's rarely used and generally not recommended in modern JavaScript. 
+#### Phases of Execution Context Creation :
+- Each execution context (GEC or FEC) is created and processed in two distinct phases: 
+1. **Creation Phase (Memory Allocation Phase)** : The JavaScript engine scans the code and allocates memory for variables and functions before the code is actually executed.
+- *var* declarations are stored in memory and initialized with the value undefined.
+- *let* and *const* declarations are also allocated memory but remain uninitialized (entering the Temporal Dead Zone).
+- Function declarations are stored in memory with their full function body.
+- The this value and the scope chain (a reference to the outer environment's variables) are also determined during this phase.
+2. **Execution Phase (Code Execution Phase)** : In this phase, the engine executes the code line by line.
+- Variables are assigned their actual values, overwriting the initial undefined placeholders.
+- Functions are executed when called, which in turn creates new Function Execution Contexts and pushes them onto the call stack. 
+#### The Call Stack :
+- The Call Stack (or Execution Stack) is a data structure used to manage the order of execution contexts. 
+- The GEC is pushed onto the bottom of the stack when the program starts.
+- Each time a function is called, a new FEC is created and pushed onto the top of the stack.
+- The context on top of the stack is always the one currently being executed.
+- When a function finishes, its FEC is popped off the stack, and control returns to the context below it.
+---
