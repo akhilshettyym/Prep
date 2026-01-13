@@ -1353,4 +1353,58 @@ obj.regularFunction();
 - Each time a function is called, a new FEC is created and pushed onto the top of the stack.
 - The context on top of the stack is always the one currently being executed.
 - When a function finishes, its FEC is popped off the stack, and control returns to the context below it.
+
+#### Each context is created in two phases:
+1. **Memory Creation Phase (Creation Phase / Hoisting Phase)** :
+JS sets up:
+this binding
+Creation of variable environment
+Setup of scope chain
+- Hoisting happens here:
+- Function declarations are fully hoisted.
+- var variables are hoisted with default value undefined.
+- let and const are hoisted but not initialized → temporal dead zone (TDZ).
+```js
+console.log(a); // undefined
+var a = 10;
+
+console.log(b); // ReferenceError (TDZ)
+let b = 20;
+```
+2. **Execution Phase** :
+- Code runs line by line.
+- Variables assigned actual values.
+- Functions executed, new contexts created.
+- Each function call → new Function Execution Context.
+---
+
+## 46. CallStack :
+- The call stack in JavaScript is a data structure used by the JavaScript engine to manage and track function calls during program execution. It operates on the Last-In, First-Out (LIFO) principle, much like a stack of plates. 
+#### How the Call Stack Works :
+- **Single-threaded** : JavaScript has a single call stack, meaning it can only execute one function at a time.
+- Push: When a function is invoked (called), the JavaScript engine creates a new execution context for that function and pushes it onto the top of the call stack.
+- **Execution** : The engine executes the function currently at the top of the stack.
+- **Nested Calls** : If the function at the top calls another function, the new, nested function is immediately pushed onto the top of the stack and executed first.
+- **Pop** : When a function finishes its execution (either by returning a value or reaching the end of its code block), its execution context is popped (removed) from the top of the stack, and control returns to the function below it.
+- **Empty** : This process continues until the entire program finishes and the call stack is empty. 
+##### Example : Consider the following JavaScript code :
+```js
+function first() {
+  console.log('Hello from firstFunction');
+}
+
+function second() {
+  first();
+  console.log('The end from secondFunction');
+}
+second();
+```
+- Here is how the call stack manages this :
+1. The second() function is called, and its execution context is pushed onto the stack.
+2. Inside second(), first() is called. first()'s execution context is pushed onto the stack (now on top of second()).
+3. first() executes its console.log statement and returns, so it is popped off the stack.
+4. Control returns to second(), which executes its console.log statement and returns.
+5. second() is popped off the stack, and the program finishes. 
+##### Stack Overflow Error :
+- A "stack overflow" error occurs when the call stack runs out of memory due to too many function calls pushed onto it without being popped off. This is commonly caused by infinite or excessively deep recursion (a function repeatedly calling itself without a base case or exit point).
 ---
