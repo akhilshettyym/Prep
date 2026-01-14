@@ -1508,7 +1508,20 @@ console.log(count); // Might output 1, instead of the expected 3
 ---
 
 ## 51. Lexical env :
-- yugkhj
+- A Lexical Environment is a core JavaScript mechanism (a theoretical concept used in the language specification) that defines the scope and accessibility of variables and functions based on their physical location in the source code.
+- It is created automatically whenever a function, block {} (for let and const declarations), or the script as a whole starts executing. 
+#### Key Components :
+- Every lexical environment consists of two parts: 
+1. **Environment Record** : An internal storage area (like an object) that stores all local variable, function, and parameter declarations within that specific scope. It maps the identifier (variable name) to its actual value.
+2. **Outer Environment Reference** : A link or pointer to the parent (outer) lexical environment, which is where the current code is physically written. The global environment has an outer reference of null. 
+#### How it Works (Scope Chain) :
+- The "*lexical*" nature means that the scope is determined by where you write the code, not where the functions are called. 
+- When JavaScript attempts to access a variable, it first looks in the current environment's Environment Record.
+- If the variable is not found locally, it follows the Outer Environment Reference to the parent environment and searches there.
+- This process continues, moving up the chain of nested lexical environments (known as the scope chain), until the variable is found in the global scope or a ReferenceError is thrown. 
+#### Relation to Closures :
+- Lexical environments are fundamental to how closures work in JavaScript.
+- All functions in JavaScript remember the lexical environment in which they were created via an internal [[Environment]] property. This allows inner functions to access variables from their outer (parent) scopes even after the outer function has finished executing and its execution context is gone from the call stack.
 ---
 
 ## 52. Map, Reduce, Filter, Each and Find :
