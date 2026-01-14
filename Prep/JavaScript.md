@@ -1469,3 +1469,46 @@ Examples:
 | **eval()**       | Variables declared inside eval() affect the surrounding scope.          | Variables declared inside eval() are scoped only to the eval() environment.               |
 | **Octal Literals**       | Allows legacy octal syntax (e.g., 010).          | Throws a SyntaxError for legacy octal syntax, which is often confusing for developers.               |                 |
 ---
+
+## 50. Race Condition :
+- A *race condition* in JavaScript is a programming error that occurs when the outcome of the code depends on the unpredictable timing or sequence of asynchronous *operations accessing and modifying shared data*.
+- Though JavaScript is single-threaded, its event-driven, non-blocking nature makes it susceptible to these issues in the context of concurrency. 
+#### How Race Conditions Occur in JavaScript :
+- In traditional *multi-threaded languages*, race conditions happen when multiple threads access the same resource simultaneously. In JavaScript, since only one piece of code runs at a time on the main thread (managed by the event loop), it is an **issue of concurrency, not parallelism**. 
+- The problem arises when an asynchronous operation (like a fetch() request, setTimeout, or user event) initiates a task, and then another operation modifies shared data before the first task's callback has had a chance to run and complete its work with the original data. 
+A classic example is incrementing a shared counter:
+```js
+let count = 0;
+
+async function incrementCounter() {
+  const currentValue = count; // Read the current value
+  await delay(100); // An async operation where other tasks can run
+  count = currentValue + 1; // Write the new value based on the old one
+}
+
+// If we run this 'concurrently':
+await Promise.all([incrementCounter(), incrementCounter(), incrementCounter()]);
+console.log(count); // Might output 1, instead of the expected 3
+```
+- In the example above, multiple incrementCounter calls might all read count as 0 before any of them has a chance to write back the incremented value. They "race" to update the final value, and the last one to finish wins, leading to an incorrect result.
+#### Common Scenarios :
+- Race conditions are common in real-world scenarios such as: 
+- **Autocomplete Search** : When a user types quickly, multiple network requests are fired. An earlier, slower request's response might arrive and overwrite the results of a later, faster request, showing outdated suggestions.
+- **State Updates in UI Frameworks (e.g., React)** : Multiple asynchronous state updates can interfere with each other, leading to an inconsistent or flickering UI.
+- **Lazy Loading Resources** : Multiple components might check if a shared resource is loaded and, finding it isn't, all try to fetch it, leading to redundant requests or corrupted state.
+
+#### Strategies to Prevent Race Conditions :
+- Several techniques can be used to manage and prevent race conditions:
+1. **Cancel Outdated Requests** : Use the AbortController API to cancel any pending network requests when a new one is initiated. This is highly effective for scenarios like autocomplete search.
+2. **Use Flags (isMounted)** : In frameworks where components can unmount before a request completes, use a flag to ensure state updates only occur if the component is still active.
+3. **Debouncing and Throttling** : For user input events (like typing or scrolling), these techniques limit how often a function can be executed, reducing the number of concurrent operations.
+4. **Mutexes (Mutual Exclusions)** : For critical sections of code that access shared resources, you can implement an async mutex to ensure only one operation can proceed at a time.
+5. **State Management Libraries** : Libraries like React Query or SWR provide built-in solutions for data fetching and caching, often handling race conditions automatically.
+6. **Atomic Operations/Transactions** : For shared data stores (like databases), use transactional operations to ensure data is updated consistently as a single, indivisible unit. 
+---
+
+## 51. Lexical env :
+- yugkhj
+---
+
+## 52. Map, Reduce, Filter, Each and Find :
