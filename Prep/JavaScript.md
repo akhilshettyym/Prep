@@ -1525,3 +1525,36 @@ console.log(count); // Might output 1, instead of the expected 3
 ---
 
 ## 52. Map, Reduce, Filter, Each and Find :
+- In JavaScript, **map(), filter(), reduce(), forEach(), and find()** are powerful built-in array methods used for iterating and manipulating data in a declarative way. 
+- Here is a breakdown of each method:
+1. **map()** : Creates a new array by applying a function to every element in the original array. The new array will always have the same length as the original.
+```js
+const numbers = [1, 2, 3, 4];
+const doubled = numbers.map(num => num * 2); 
+// doubled: [2, 4, 6, 8]
+```
+2. **filter()** : Creates a new array containing only elements that satisfy a specific condition (a function that returns true or false). If no elements meet the condition, it returns an empty array.
+```js
+const numbers = [1, 2, 3, 4];
+const evenNumbers = numbers.filter(num => num % 2 === 0);
+// evenNumbers: [2, 4]
+```
+3. **reduce()** : Executes a "reducer" callback function on each element of the array, resulting in a *single output value* (which can be a number, string, object, etc.). The result of each callback iteration is passed as an accumulator to the next iteration.
+```js
+const numbers = [1, 2, 3, 4];
+const sum = numbers.reduce((accumulator, currentValue) => accumulator + currentValue, 0); 
+// sum: 10 (0 + 1 + 2 + 3 + 4)
+```
+4. **forEach()** : Executes a provided function once for each array element. Unlike map(), filter(), or reduce(), it does not return a value (it returns undefined) and is primarily used for performing side effects, such as modifying an external variable or logging to the console.
+```js
+const fruits = ["apple", "orange", "cherry"];
+fruits.forEach(fruit => console.log(`I like ${fruit}`));
+// Logs "I like apple", "I like orange", "I like cherry" to the console.
+```
+5. **find()** : Returns the value of the *first element in the array* that satisfies the provided testing function. Otherwise, it returns undefined. It stops iterating as soon as it finds a match, unlike filter(), which checks all elements.
+```js
+const array = [1, 5, 3, 4, 5];
+const found = array.find(element => element > 4); 
+// found: 5 (returns the first element that satisfies the condition)
+```
+---
