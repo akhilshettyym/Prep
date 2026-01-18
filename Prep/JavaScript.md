@@ -731,6 +731,13 @@ The Promise object has several static methods for handling groups of promises:
 - *Promise.allSettled(iterable)* : Waits for all promises to be settled (fulfilled or rejected) and returns an array of their outcomes.
 - *Promise.any(iterable)* : Fulfills as soon as one of the promises in the iterable fulfills. It rejects only if all promises are rejected.
 - *Promise.race(iterable)* : Settles (fulfills or rejects) as soon as the first promise in the iterable settles.
+
+| Method              | Behavior                                                                 | Result if successful                                                                 | Result if a promise fails                                                                 | Primary Use Case                                                                                   |
+|---------------------|--------------------------------------------------------------------------|--------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------|
+| Promise.all()     | Waits for **all** promises to fulfill                                    | An array of all fulfilled values, in the same order                                  | Immediately rejects with the first promise's reason (fastest failure)                    | When **all** operations must succeed to proceed (e.g., loading all critical resources)            |
+| Promise.any()    | Resolves as soon as **any** promise fulfills                             | The value of the **first** fulfilled promise                                         | Rejects only if **all** promises reject, with an AggregateError                        | When you need at least one success and have multiple fallbacks (e.g., fetching from multiple CDNs) |
+| Promise.allSettled() | Waits for **all** promises to settle (fulfill **or** reject)         | An array of objects describing each outcome:<br>`{status: "fulfilled", value: ...}`<br>`{status: "rejected", reason: ...}` | **Always resolves** — never rejects                                                       | When you need the result of every operation, regardless of success or failure (e.g., partial UI updates, logging) |
+| Promise.race()    | Settles as soon as the **first** promise settles (fulfills **or** rejects) | The value or reason of the **first** settled promise                                 | Rejects or fulfills based on whichever promise finishes first                            | For timeouts or getting the fastest response (e.g., race between network request + timeout)      |              
 ---
 
 ## 27. Async and Await :
@@ -983,7 +990,7 @@ greetJohn(); // Calls the returned function
 ```
 ---
 
-## 37. Call, Apply and Bind, Usage :
+## 37. Call, Apply and Bind Usage :
 - In JavaScript, call(), apply(), and bind() are methods used to explicitly set the value of the this keyword inside a function. The key distinctions lie in how they handle function execution and argument passing.
 
 | Method                   | Execution Timing                              | Argument Passing                                      |                                   |
@@ -1557,4 +1564,52 @@ const array = [1, 5, 3, 4, 5];
 const found = array.find(element => element > 4); 
 // found: 5 (returns the first element that satisfies the condition)
 ```
+---
+
+## 53. Event Emitter :
+- In JavaScript, an Event Emitter is a mechanism that allows you to use the publisher/subscriber pattern, where objects can emit named events that trigger registered callback functions (listeners). This pattern is fundamental to asynchronous, event-driven programming, especially in Node.js. 
+#### Core Concepts :
+The Event Emitter pattern operates through two primary actions: 
+- **Emitting events** : An object announces that something has happened by "emitting" a named event using the emit() method.
+- **Listening to events** : Other parts of the application can "subscribe" or "listen" for specific named events using the on() (or addListener()) method and run a predefined function (callback) when the event occurs. 
+#### Usage in Node.js :
+- Node.js has a built-in events module that provides the EventEmitter class, which is a core component of its architecture. 
+- How to Create and Use an EventEmitter
+- You can create an instance of the EventEmitter class or create a class that extends it to inherit its functionality. 
+```js
+const EventEmitter = require('events');
+
+// Create a new EventEmitter instance
+const myEmitter = new EventEmitter();
+
+// 1. Register an event listener using 'on'
+myEmitter.on('ticketBuy', (email, price) => {
+    console.log(`Sending email to ${email} for ticket priced at $${price}`);
+});
+
+// 2. Emit the event using 'emit'
+myEmitter.emit('ticketBuy', 'test@example.com', 20);
+// Output: Sending email to test@example.com for ticket priced at $20
+```
+#### Key Methods and Features :
+The EventEmitter class provides several methods for managing events and listeners: 
+- on(event, listener): Adds a listener function to the end of the listeners array for a named event. addListener() is an alias.
+- once(event, listener): Adds a one-time listener for an event. This listener is removed after it is triggered the first time.
+- emit(event, [...args]): Synchronously calls all listeners registered for the named event, in the order they were registered, passing any supplied arguments.
+- removeListener(event, listener): Removes a specific listener from the event's listener array. off() is an alias.
+- removeAllListeners([event]): Removes all listeners for a specific event name, or all events if no name is specified.
+- listenerCount(event): Returns the number of listeners subscribed to a specific event. 
+
+#### Error Handling :
+- It is considered best practice to always have a listener for the special error event. If an error event is emitted and no listener is registered, Node.js will throw the error and crash the program. 
+```js
+myEmitter.on('error', (err) => {
+    console.error('An error occurred:', err.message);
+});
+
+myEmitter.emit('error', new Error('Something went wrong!'));
+// Output: An error occurred: Something went wrong!
+```
+#### Event Emitters in the Browser :
+- While the built-in EventEmitter class is a Node.js core module, the DOM in web browsers uses a similar, but separate, mechanism with addEventListener() for handling user interactions like clicks and key presses. The fundamental concept of event-driven architecture is consistent across both environments. You can also implement your own custom Event Emitter class in plain JavaScript for use in browser applications.
 ---
