@@ -1613,3 +1613,145 @@ myEmitter.emit('error', new Error('Something went wrong!'));
 #### Event Emitters in the Browser :
 - While the built-in EventEmitter class is a Node.js core module, the DOM in web browsers uses a similar, but separate, mechanism with addEventListener() for handling user interactions like clicks and key presses. The fundamental concept of event-driven architecture is consistent across both environments. You can also implement your own custom Event Emitter class in plain JavaScript for use in browser applications.
 ---
+
+## 54. setInterval Polyfill :
+- A setInterval polyfill can be created using a recursive *setTimeout* implementation to mimic repeated execution at a specified delay. The core idea is to schedule the next execution of the callback function only after the current one has finished.
+- *setInterval Polyfill Implementation* :
+This implementation uses closures to manage unique interval IDs and to clear the intervals when needed.
+```js
+function createSetInterval() {
+  let timerId = 0;
+  // A map to store active interval IDs and their corresponding timeout IDs
+  const timersMap = {}; 
+
+  function mySetInterval(callback, delay, ...args) {
+    timerId++; // Increment ID for each new interval
+    const currentId = timerId;
+
+    function repeat() {
+      // Use setTimeout to schedule the next run
+      timersMap[currentId] = setTimeout(() => {
+        if (timersMap[currentId]) { // Check if the interval is still active
+          callback.apply(this, args); // Execute the callback with the provided arguments
+          repeat(); // Schedule the next execution
+        }
+      }, delay);
+    }
+
+    repeat(); // Initial call
+    return currentId; // Return the unique ID to the user for clearing
+  }
+
+  function myClearInterval(id) {
+    clearTimeout(timersMap[id]); // Clear the scheduled timeout
+    delete timersMap[id]; // Remove the ID from the map
+  }
+
+  // Expose the custom functions
+  return { mySetInterval, myClearInterval };
+}
+
+// Example usage:
+const { mySetInterval, myClearInterval } = createSetInterval();
+
+let count = 0;
+const intervalId = mySetInterval(() => {
+  console.log("Hello every 1 second! Count:", count++);
+  if (count === 5) {
+    myClearInterval(intervalId); // Stop the interval after 5 runs
+    console.log("Interval cleared");
+  }
+}, 1000);
+```
+#### Key Differences from Native setInterval :
+Using recursive setTimeout offers more control over the timing compared to the native setInterval: 
+- **Flexible Delay** : In a recursive setTimeout approach, the next iteration is scheduled after the previous callback has completed execution. This prevents issues where long-running or asynchronous tasks might cause subsequent intervals to stack up or run faster than intended, which can happen with the native setInterval.
+- **Guaranteed Interval** : The delay between the end of one execution and the start of the next one is always at least the specified delay time. In contrast, setInterval schedules the function to run every delay milliseconds from the start of the previous call, regardless of how long it took to execute. 
+- For most scenarios, especially those involving asynchronous operations, the nested setTimeout approach is the recommended alternative.
+---
+
+## 55. Parallel limit function :
+- In JavaScript, the concept of a "parallel limit function" typically refers to **limiting the number of concurrently executing asynchronous tasks (concurrency limit)**, as *true multi-threading parallelism* is only possible using *Web Workers in browsers or child processes/worker threads* in Node.js. 
+For managing concurrent asynchronous operations, the most common approach involves using third-party libraries or implementing a custom solution using Promises. 
+#### Third-Party Libraries :
+Several robust libraries offer a parallelLimit or similar function to manage concurrency easily: 
+- *async library* : This widely-used library provides a parallelLimit function, which takes an array of functions, a limit, and an optional callback.
+- *p-limit* : A popular, lightweight package for limiting the number of concurrent promises running at a time. It offers a clean, promise-based API.
+- *parallel-limiter* : Another package that provides a ParallelLimiter class for scheduling and awaiting tasks with a defined concurrency limit. 
+#### Custom Implementation using Promises :
+- If you prefer a vanilla JavaScript solution without external dependencies, you can implement a promise pool or queue manager. The core idea is to maintain a queue and process the next task as soon as a current one completes, ensuring the number of simultaneous active tasks never exceeds the specified limit. 
+- Here is a basic implementation strategy for a parallelLimit function that handles an array of async tasks (functions that return promises):
+```js 
+/**
+ * Runs an array of asynchronous tasks in parallel with a limited concurrency.
+ * @param {Array<Function>} tasks - An array of functions that return Promises.
+ * @param {number} limit - The maximum number of tasks to run concurrently.
+ * @returns {Promise<Array<any>>} A Promise that resolves with an array of all results.
+ */
+function parallelLimit(tasks, limit) {
+    return new Promise((resolve, reject) => {
+        const results = [];
+        let completedTasks = 0;
+        let runningTasks = 0;
+        let index = 0;
+
+        function runNextTask() {
+            if (index < tasks.length && runningTasks < limit) {
+                runningTasks++;
+                const currentTaskIndex = index;
+                const task = tasks[index++];
+                
+                task()
+                    .then(result => {
+                        results[currentTaskIndex] = result;
+                        runningTasks--;
+                        completedTasks++;
+
+                        if (completedTasks === tasks.length) {
+                            resolve(results);
+                        } else {
+                            runNextTask();
+                        }
+                    })
+                    .catch(error => {
+                        // Immediately reject if any single task fails
+                        reject(error);
+                    });
+                
+                // Recursively call to fill up the concurrency limit
+                runNextTask(); 
+            }
+        }
+
+        // Start initial tasks up to the limit
+        for (let i = 0; i < Math.min(limit, tasks.length); i++) {
+            runNextTask();
+        }
+    });
+}
+
+// Example Usage:
+const asyncTask = (id, duration) => {
+    return new Promise(resolve => {
+        setTimeout(() => {
+            console.log(`Task ${id} completed in ${duration}ms`);
+            resolve(`Result of ${id}`);
+        }, duration);
+    });
+};
+
+const tasksList = [
+    () => asyncTask('A', 2000),
+    () => asyncTask('B', 4000),
+    () => asyncTask('C', 1000),
+    () => asyncTask('D', 3000),
+    () => asyncTask('E', 500)
+];
+
+parallelLimit(tasksList, 2)
+    .then(results => console.log('All tasks finished:', results))
+    .catch(error => console.error('An error occurred:', error));
+
+// This implementation starts the allowed number of tasks immediately and queues the rest, running the next available task as soon as one slot opens up. 
+```
+---
