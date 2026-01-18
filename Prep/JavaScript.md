@@ -1755,3 +1755,100 @@ parallelLimit(tasksList, 2)
 // This implementation starts the allowed number of tasks immediately and queues the rest, running the next available task as soon as one slot opens up. 
 ```
 ---
+
+## 56. Deep vs Shallow Copy :
+- The main difference between a shallow copy and a deep copy in JavaScript is how they handle nested objects or arrays: a **shallow copy shares references** to nested data with the original, while a **deep copy creates a completely independent clone**, recursively duplicating all levels.
+#### 1. Shallow Copy :
+- A shallow copy creates a new object or array but only copies the top-level properties. Any nested objects or arrays still refer to the same memory location as the original. 
+#### **Behavior** : Changes made to a nested structure in the copied version will also affect the original object.
+#### **Use Cases** : Working with "flat" data structures that contain only primitive values (strings, numbers, booleans, etc.).
+- When performance is critical, as it is a faster operation than deep copying.
+#### Common Methods :
+- Spread syntax (...)
+- Object.assign()
+- Array.prototype.slice()
+- Array.prototype.concat()
+
+#### 2. Deep Copy :
+- A deep copy creates an entirely new object or array, recursively copying all nested structures. This results in a fully independent clone where no references are shared with the original. 
+#### **Behavior** : Modifications to the deep copy do not affect the original object or array.
+#### **Use Cases** : Working with complex, deeply nested data where immutability is required (e.g., in state management like Redux or React apps).
+- When you need to ensure that the original data remains unchanged, regardless of operations on the copy.
+#### **Common Methods** :
+- **structuredClone()** : The modern, built-in standard for a true deep copy that handles various data types and circular references (though it won't work on functions).
+- **JSON.parse(JSON.stringify())** : A common, simple "*hack*" that works for objects with serializable values, but fails on functions, undefined, Date objects, and circular references.
+- Libraries like Lodash provide robust functions such as _.cloneDeep() for complex scenarios, including handling functions and circular references.
+---
+
+## 57. Flatten Deeply Nested Copy :
+- To flatten deeply nested data structures in JavaScript while ensuring a new copy is created (avoiding modification of the original), you can use built-in methods for arrays and a custom recursive function for objects. 
+#### For Arrays :
+- The most modern and efficient solution for arrays is the [Array.prototype.flat()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/flat) method, using Infinity as the depth argument to flatten all levels.
+```js
+const nestedArray = [1, [2, 3], [4, [5, 6, [7, 8]]]];
+// Using flat(Infinity) to create a new, deeply flattened array
+const flatArray = nestedArray.flat(Infinity);
+console.log(flatArray);
+// Output: [1, 2, 3, 4, 5, 6, 7, 8]
+console.log(nestedArray); 
+// Output (original array remains unchanged): [1, [2, 3], [4, [5, 6, [7, 8]]]]
+```
+#### For Objects :
+- For deeply nested objects, a custom recursive function is typically required. The function below ensures a deep copy by utilizing the spread syntax within the recursion or Object.assign, effectively creating new objects at each level.
+```js
+const nestedObject = {
+  a: 1,
+  b: {
+    c: 2,
+    d: {
+      e: 3,
+      f: {
+        g: 4
+      }
+    }
+  },
+  h: 5
+};
+
+function flattenObjectDeepCopy(obj, parentKey = '', result = {}) {
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      const newKey = parentKey ? `${parentKey}.${key}` : key;
+      const value = obj[key];
+
+      // Check if the value is an object and not null (typeof null === 'object')
+      if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+        // Recursively call the function to flatten the nested object
+        // The spread syntax here ensures a deep copy of the result object at each step
+        flattenObjectDeepCopy(value, newKey, result);
+      } else {
+        // Assign the value to the result object
+        result[newKey] = value;
+      }
+    }
+  }
+  // Return a new object that is a shallow copy of the 'result'
+  // This helps ensure the caller receives a new object, not just a reference to the internal accumulator
+  return { ...result };
+}
+
+const flatObject = flattenObjectDeepCopy(nestedObject);
+
+console.log(flatObject);
+/* 
+Output:
+{
+  'a': 1,
+  'b.c': 2,
+  'b.d.e': 3,
+  'b.d.f.g': 4,
+  'h': 5
+}
+*/
+
+console.log(nestedObject);
+// Output (original object remains unchanged): { a: 1, b: { c: 2, d: { e: 3, f: [Object] } }, h: 5 }
+```
+- Using [lodash.flattendeep](https://lodash.com) or [lodash.flatmapdeep](https://lodash.com)
+For those using the Lodash library, methods like _.flattenDeep() for arrays or custom recursive functions with _.flatMapDeep() provide concise alternatives. Lodash handles the copying internally, returning a new flattened data structure.
+---
