@@ -1221,3 +1221,92 @@ async function renderUserDashboard(userId) {
 }
 ```
 - **Modularization and Named Functions** : Breaking code into smaller, reusable, named functions can also help to reduce nesting levels and improve organization.
+---
+## 43. 'this' :
+- In JavaScript, the *this keyword* refers to the *object* that is executing the *current function*. The key concept to grasp is that its value is determined dynamically at runtime based on how a function is invoked, not where it is defined (with the exception of arrow functions). 
+- Here is how this behaves in different contexts:
+1. **Global Context** :
+- When this is used alone, outside of any function or object, it refers to the global object. 
+- In a web browser, the global object is window.
+- In Node.js, it is global.
+- In ES modules, this is undefined at the top level.
+```js
+//In a browser's global scope
+console.log(this === window); // true\
+```
+2. **Object Methods** :
+- When a function is called as a method of an object (using dot notation), this refers to the object that owns the method.
+```js
+const person = {
+  name: "Spongebob",
+  sayHello: function() {
+    console.log(`Hi! I am ${this.name}`); // this refers to the 'person' object
+  }
+};
+
+person.sayHello(); // Output: Hi! I am Spongebob
+```
+3. **Regular Function Invocations** :
+- When a function is called as a standalone function (not as a method of an object), this typically defaults to the global object (in non-strict mode). In strict mode ('use strict';), this is undefined.
+```js
+function display() {
+  console.log(this);
+}
+
+// In non-strict mode (browser):
+showThis(); // Output: Window (global object)
+
+// In strict mode:
+'use strict';
+function showThisStrict() {
+  console.log(this);
+}
+showThisStrict(); // Output: undefined
+```
+4. **Constructor Calls** :
+- When a function is invoked using the new keyword, it acts as a constructor. In this case, this refers to the newly created object instance.
+```js
+function Car(brand) {
+  this.brand = brand; // this refers to the new object being created
+}
+
+const myCar = new Car("Apple");
+console.log(myCar.brand); // Output: Apple
+```
+5. **Explicit Binding (Call, Apply, Bind)** :
+- You can explicitly set the value of this for a function using the *call(), apply(), or bind()* methods. 
+- call() and apply() invoke the function immediately with the specified this value.
+- bind() returns a new function with this permanently bound to a specific object, which can be executed later.
+```js
+const person1 = { name: "Pedro" };
+const person2 = { name: "Jimena" };
+
+function sayName(greeting) {
+  console.log(greeting + this.name);
+}
+
+sayName.call(person1, "Hello, "); // Output: Hello, Pedro (this is person1)
+sayName.apply(person2, ["Hi, "]); // Output: Hi, Jimena (this is person2)
+
+const boundSayName = sayName.bind(person1);
+boundSayName("Hey, "); // Output: Hey, Pedro (this is permanently person1)
+```
+6. **Arrow Functions** :
+- Arrow functions do not have their own this binding. Instead, they inherit this from the surrounding (lexical) scope at the time they are defined, which makes them very useful for callbacks and preserving context.
+```js
+const obj = {
+  name: "Object context",
+  regularFunction: function() {
+    console.log("Regular:", this.name);
+    const arrowFunction = () => {
+      console.log("Arrow:", this.name); // Inherits 'this' from 'regularFunction' scope
+    };
+    arrowFunction();
+  }
+};
+
+obj.regularFunction();
+// Output:
+// Regular: Object context
+// Arrow: Object context
+```
