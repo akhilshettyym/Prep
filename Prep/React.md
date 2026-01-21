@@ -1510,10 +1510,13 @@ function Child({ onDelete, itemId }) {
 ---
 
 ## 6. <u> State </u> -
+
 - State is any piece of data that can change over time and, when it changes, should trigger a re-render of the component (or parts of the UI). In React, state is what makes components interactive and dynamic. React provides tools to manage state in a predictable and performant way.
+
 ---
 
 ## 57. State Basics :
+
 - State represents the **internal memory** of a component.
 - When state changes, React re-renders the component (and potentially its children).
 - State is **local** by default — each component instance has its own state.
@@ -1522,18 +1525,23 @@ function Child({ onDelete, itemId }) {
   - `useState` Hook (functional components — recommended)
   - `this.state` / `this.setState` (class components — legacy)
 
-#### Core principle :  
+#### Core principle :
+
 - **UI = f(state, props)**  
-Every time state changes, React calls your component function again with the new state → new UI.
+  Every time state changes, React calls your component function again with the new state → new UI.
+
 ---
 
 ## 58. useState Hook :
+
 - `useState` is the primary Hook for adding state to functional components. It was introduced in React 16.8.
 
 Syntax:
+
 ```jsx
 const [state, setState] = useState(initialValue);
 ```
+
 - Returns a **pair** (array destructuring):
   - `state`: current value
   - `setState`: function to update the value
@@ -1541,8 +1549,9 @@ const [state, setState] = useState(initialValue);
 - `useState` can be called multiple times in one component.
 
 Example:
+
 ```jsx
-import { useState } from 'react';
+import { useState } from "react";
 
 function Counter() {
   const [count, setCount] = useState(0);
@@ -1555,33 +1564,40 @@ function Counter() {
   );
 }
 ```
+
 ---
 
 ## 59. Initial State :
+
 - The argument passed to `useState` is the **initial value** — used only on the very first render.
 
 ```jsx
-const [name, setName] = useState("Akhil");               // string
-const [isDark, setIsDark] = useState(false);             // boolean
+const [name, setName] = useState("Akhil"); // string
+const [isDark, setIsDark] = useState(false); // boolean
 const [user, setUser] = useState({ name: "Akhil", city: "Port Washington" }); // object
-const [items, setItems] = useState([]);                  // array
+const [items, setItems] = useState([]); // array
 const [count, setCount] = useState(() => expensiveCalculation()); // lazy init
 ```
 
 **Lazy initialization** (important for expensive computations):
+
 ```jsx
 const [data, setData] = useState(() => {
   console.log("This runs only once");
   return fetchInitialData(); // expensive operation
 });
 ```
+
 - The function is called only once during initial render — not on updates.
+
 ---
 
 ## 60. Updating State :
+
 - Never mutate state directly. Always use the setter function.
 
 Correct :
+
 ```jsx
 setCount(count + 1);
 setUser({ ...user, city: "New York" });
@@ -1589,19 +1605,23 @@ setItems([...items, newItem]);
 ```
 
 Incorrect (will cause bugs) :
+
 ```jsx
-count++;                    // mutation
-user.city = "New York";     // direct mutation
-items.push(newItem);        // mutates original array
+count++; // mutation
+user.city = "New York"; // direct mutation
+items.push(newItem); // mutates original array
 ```
+
 - `setState` can also accept a function (recommended when depending on previous state) :
 
 ```jsx
-setCount(prevCount => prevCount + 1);
+setCount((prevCount) => prevCount + 1);
 ```
+
 ---
 
 ## 61. State Immutability :
+
 - React relies on immutability to detect changes efficiently (especially with `React.memo`, `useMemo`, `useEffect` dependencies).
 - **Primitives** (string, number, boolean) : Replacing value is fine.
 - **Objects & Arrays** : Always create a **new** reference.
@@ -1610,27 +1630,31 @@ Examples :
 
 ```jsx
 // Object
-setUser(prev => ({ ...prev, name: "Akhil Updated" }));
+setUser((prev) => ({ ...prev, name: "Akhil Updated" }));
 
 // Array - add
-setTodos(prev => [...prev, newTodo]);
+setTodos((prev) => [...prev, newTodo]);
 
 // Array - remove
-setTodos(prev => prev.filter(t => t.id !== idToRemove));
+setTodos((prev) => prev.filter((t) => t.id !== idToRemove));
 
 // Array - update
-setTodos(prev =>
-  prev.map(todo =>
-    todo.id === targetId ? { ...todo, completed: true } : todo
-  )
-)
+setTodos((prev) =>
+  prev.map((todo) =>
+    todo.id === targetId ? { ...todo, completed: true } : todo,
+  ),
+);
 ```
+
 - Immutability prevents subtle bugs and enables performance optimizations.
+
 ---
 
 ## 62. Functional State Updates :
+
 - When the new state depends on the previous state, always use the functional form to avoid stale closures.
 - Problematic (stale state) :
+
 ```jsx
 // This may batch and use outdated count
 setCount(count + 1);
@@ -1638,20 +1662,26 @@ setCount(count + 1); // might only increment once
 ```
 
 Correct :
+
 ```jsx
-setCount(prev => prev + 1);
-setCount(prev => prev + 1); // guaranteed +2
+setCount((prev) => prev + 1);
+setCount((prev) => prev + 1); // guaranteed +2
 ```
+
 Especially important in :
+
 - Event handlers with multiple updates
 - `useEffect` when depending on state
 - Rapid user interactions (click spamming)
+
 ---
 
 ## 63. Multiple State Variables :
+
 - You can (and often should) use multiple `useState` calls instead of one large object.
 
 Preferred :
+
 ```jsx
 const [firstName, setFirstName] = useState("");
 const [lastName, setLastName] = useState("");
@@ -1659,25 +1689,31 @@ const [email, setEmail] = useState("");
 ```
 
 Less preferred (unless tightly related) :
+
 ```jsx
 const [form, setForm] = useState({ firstName: "", lastName: "", email: "" });
 ```
 
 **When to use one object**:
+
 - Form data that is submitted together
 - Settings object
 - Data that is always updated as a unit
 
 **When to split**:
+
 - Independent pieces of state
 - Different update frequency
 - Easier testing and debugging
+
 ---
 
 ## 64. Derived State :
+
 - Derived state is state that can be **computed** from other state or props — **do not store it in state**.
 
 Bad:
+
 ```jsx
 const [fullName, setFullName] = useState("");
 const [firstName, setFirstName] = useState("");
@@ -1689,24 +1725,29 @@ useEffect(() => {
 ```
 
 Better :
+
 ```jsx
 const fullName = `${firstName} ${lastName}`.trim();
 ```
+
 - Use plain variables, `useMemo`, or just compute in render when derived value is cheap.
+
 ---
 
 ## 65. Lifting State Up :
+
 - When two or more sibling components need to share the same state → **lift it up** to their closest common parent.
 
 Example :
+
 ```jsx
 function TemperatureInput({ scale, temperature, onTemperatureChange }) {
   return (
     <fieldset>
-      <legend>{scale === 'c' ? "Celsius" : "Fahrenheit"}</legend>
+      <legend>{scale === "c" ? "Celsius" : "Fahrenheit"}</legend>
       <input
         value={temperature}
-        onChange={e => onTemperatureChange(e.target.value)}
+        onChange={(e) => onTemperatureChange(e.target.value)}
       />
     </fieldset>
   );
@@ -1716,28 +1757,39 @@ function Calculator() {
   const [temperature, setTemperature] = useState("");
   const [scale, setScale] = useState("c");
 
-  const handleCChange = value => {
+  const handleCChange = (value) => {
     setTemperature(value);
     setScale("c");
   };
 
-  const handleFChange = value => {
+  const handleFChange = (value) => {
     setTemperature(value);
     setScale("f");
   };
 
   return (
     <>
-      <TemperatureInput scale="c" temperature={temperature} onTemperatureChange={handleCChange} />
-      <TemperatureInput scale="f" temperature={temperature} onTemperatureChange={handleFChange} />
+      <TemperatureInput
+        scale="c"
+        temperature={temperature}
+        onTemperatureChange={handleCChange}
+      />
+      <TemperatureInput
+        scale="f"
+        temperature={temperature}
+        onTemperatureChange={handleFChange}
+      />
     </>
   );
 }
 ```
+
 - State lives in `Calculator` → both inputs stay in sync.
+
 ---
 
 ## 66. Local vs Global State :
+
 - **Local State** : Managed inside one component using `useState` or `useReducer`. Best for UI-specific concerns (toggle, form input, counter).
 
 - **Global State** : State that many components need to access or update.
@@ -1746,13 +1798,16 @@ function Calculator() {
   - Zustand, Jotai, Recoil (lightweight)
   - Redux, MobX (traditional / complex apps)
 - Rule of thumb :
-> Keep state as local as possible. Only lift or globalize when truly needed.
+  > Keep state as local as possible. Only lift or globalize when truly needed.
+
 ---
 
 ## 67. State Synchronization :
+
 - Avoid manually keeping two pieces of state in sync — it leads to bugs.
 
 Anti-pattern :
+
 ```jsx
 const [count, setCount] = useState(0);
 const [double, setDouble] = useState(0);
@@ -1763,14 +1818,18 @@ useEffect(() => {
 ```
 
 Better :
+
 ```jsx
 const [count, setCount] = useState(0);
 const double = count * 2; // derived, always correct
 ```
+
 - If sync is truly required (rare), prefer derived values or controlled components.
+
 ---
 
 ## 68. State Anti-Patterns :
+
 1. **Direct mutation of state**  
    `count++`, `user.name = "new"`, `items.push()`
 2. **Storing derived/computed values in state**  
@@ -1787,30 +1846,38 @@ const double = count * 2; // derived, always correct
    Using `setState(initial)` instead of a key or reset function
 
 Correct reset example :
+
 ```jsx
 function Form() {
   const [key, setKey] = useState(0);
-  const reset = () => setKey(prev => prev + 1);
+  const reset = () => setKey((prev) => prev + 1);
 
   return <input key={key} />; // remounts component
 }
 ```
+
 - Mastering state management is one of the most important skills in React — it directly affects performance, bug frequency, and maintainability.
+
 ---
 
 ## 7. <u> Event Handling </u> -
+
 - React provides a consistent, cross-browser way to handle DOM events through **Synthetic Events**. These events wrap native browser events and behave predictably across different browsers and devices. React's event system is one of the key reasons developers find event handling simpler and more reliable compared to vanilla JavaScript.
+
 ---
 
 ## 69. Synthetic Events :
+
 - React creates a **SyntheticEvent** object that normalizes event properties and behavior across browsers.
 
 Key characteristics :
+
 - **Cross-browser consistency** — properties like `event.preventDefault()`, `event.stopPropagation()`, `event.target`, `event.currentTarget`, `event.key`, etc. work the same everywhere.
 - **Event pooling** — for performance, React pools (reuses) event objects. After the event handler runs, the event object is cleared (all properties become `null`).
 - **Nullified properties** — if you need to access event properties asynchronously (e.g., in a `setTimeout`), you must call `event.persist()` or store needed values beforehand.
 
 Example of pooling issue :
+
 ```jsx
 function handleClick(event) {
   // This works synchronously
@@ -1830,14 +1897,19 @@ function handleClick(event) {
   }, 1000);
 }
 ```
+
 - Modern recommendation: Prefer storing values explicitly over `persist()` (deprecated in React 18+ in many cases).
+
 ---
 
 ## 70. Event Binding :
+
 - In React, event handlers are attached using camelCase property names (e.g., `onClick`, `onChange`, `onSubmit`).
 
 Two main ways to define handlers :
-1. **Class components** (legacy) 
+
+1. **Class components** (legacy)
+
    ```jsx
    class Button extends React.Component {
      constructor(props) {
@@ -1858,6 +1930,7 @@ Two main ways to define handlers :
 
 2. **Functional components** (modern — preferred)
    - Use arrow functions (lexical `this`) or define inside component (new function on each render)
+
    ```jsx
    function Button() {
      // Option 1: Define inside render (new function each time)
@@ -1873,60 +1946,80 @@ Two main ways to define handlers :
      return <button onClick={handleClick}>Click</button>;
    }
    ```
+
 - **Performance note**: Inline arrow functions (`onClick={() => doSomething()}`) create a new function on every render. Use `useCallback` when passing handlers to memoized children or when performance is critical.
+
 ---
 
 ## 71. Inline Event Handlers :
+
 - You can define handlers directly in JSX (common for simple cases):
+
 ```jsx
 <button onClick={() => alert("Clicked!")}>Click me</button>
 ```
-- *Pros* : Quick and readable for trivial logic.
-- *Cons* : Creates new function every render → can hurt performance when passed to many children or m-emoized components.
+
+- _Pros_ : Quick and readable for trivial logic.
+- _Cons_ : Creates new function every render → can hurt performance when passed to many children or m-emoized components.
 - Best practice: Define handler as a named function or use `useCallback`.
+
 ---
 
 ## 72. Passing Arguments to Handlers :
+
 - Three common patterns :
+
 1. **Arrow function wrapper** (most common)
+
    ```jsx
    <button onClick={() => handleDelete(item.id)}>Delete</button>
    ```
 
 2. **Bind in render** (less common now)
+
    ```jsx
    <button onClick={handleDelete.bind(null, item.id)}>Delete</button>
    ```
 
 3. **Using data attributes** (useful in loops)
+
    ```jsx
-   <button data-id={item.id} onClick={handleDelete}>Delete</button>
+   <button data-id={item.id} onClick={handleDelete}>
+     Delete
+   </button>;
 
    function handleDelete(e) {
      const id = e.currentTarget.dataset.id;
      // ...
    }
    ```
+
 - Recommendation: Use arrow function wrapper unless you have hundreds/thousands of elements.
+
 ---
 
 ## 73. Event Delegation :
+
 - React uses a single event listener at the root of the document (event delegation) rather than attaching listeners to every DOM node.
 
 Benefits:
+
 - Better performance (fewer listeners)
 - Works even when elements are added/removed dynamically
 - Consistent behavior across browsers
 - You almost never need to worry about manual delegation in React — it’s handled automatically.
+
 ---
 
 ## 74. Prevent Default :
+
 - Many browser events have default behavior (e.g., form submit reloads page, link click navigates).
 - Use `event.preventDefault()` to stop it :
+
 ```jsx
 function Form() {
   const handleSubmit = (e) => {
-    e.preventDefault();           // stops page reload
+    e.preventDefault(); // stops page reload
     console.log("Form submitted");
     // handle form data
   };
@@ -1939,11 +2032,15 @@ function Form() {
   );
 }
 ```
+
 - Common use cases: forms, links (`<a onClick={...}>`), drag-and-drop.
+
 ---
 
 ## 75. Stop Propagation :
+
 - `event.stopPropagation()` prevents the event from bubbling up to parent elements.
+
 ```jsx
 <div onClick={() => console.log("Parent clicked")}>
   <button
@@ -1956,18 +2053,23 @@ function Form() {
   </button>
 </div>
 ```
+
 - Clicking button logs only "Button clicked" (parent handler is not triggered).
 - Use carefully — overusing can make event flow hard to reason about.
+
 ---
 
 ## 76. Keyboard Events :
+
 - React normalizes keyboard events across browsers.
 
 Common events :
+
 - `onKeyDown`, `onKeyPress` (deprecated), `onKeyUp`
 - Properties: `event.key`, `event.code`, `event.ctrlKey`, `event.shiftKey`, `event.metaKey`, `event.altKey`
 
 Example — Enter key submit :
+
 ```jsx
 function SearchInput() {
   const handleKeyDown = (e) => {
@@ -1976,21 +2078,27 @@ function SearchInput() {
     }
   };
 
-  return <input onKeyDown={handleKeyDown} placeholder="Press Enter to search" />;
+  return (
+    <input onKeyDown={handleKeyDown} placeholder="Press Enter to search" />
+  );
 }
 ```
+
 - Useful keys : `"Escape"`, `"ArrowUp"`, `"ArrowDown"`, `"Tab"`, `" "`, etc.
+
 ---
 
 ## 77. Mouse Events :
 
 Common mouse events in React :
+
 - `onClick`, `onDoubleClick`
 - `onMouseDown`, `onMouseUp`, `onMouseEnter`, `onMouseLeave`, `onMouseOver`, `onMouseOut`
 - `onContextMenu` (right-click)
 - Properties: `event.clientX`, `event.clientY`, `event.pageX`, `event.pageY`, `event.screenX`, `event.screenY`, `event.button`
 
 Example — hover detection :
+
 ```jsx
 function HoverCard() {
   const [isHovered, setIsHovered] = useState(false);
@@ -2006,11 +2114,13 @@ function HoverCard() {
   );
 }
 ```
+
 ---
 
 ## 78. Form Events :
 
 Most important form events :
+
 - `onSubmit` — on `<form>`
 - `onChange` — on inputs, select, textarea (fires on every keystroke/value change)
 - `onInput` — similar to `onChange` but lower-level
@@ -2018,12 +2128,18 @@ Most important form events :
 - `onInvalid` — for form validation
 
 Controlled input example:
+
 ```jsx
 function LoginForm() {
   const [email, setEmail] = useState("");
 
   return (
-    <form onSubmit={(e) => { e.preventDefault(); console.log(email); }}>
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        console.log(email);
+      }}
+    >
       <input
         type="email"
         value={email}
@@ -2035,12 +2151,15 @@ function LoginForm() {
   );
 }
 ```
+
 ---
 
 ## 79. Custom Events :
+
 - React doesn’t have native custom events like the DOM’s `CustomEvent`, but you can simulate them by passing callback functions as props.
 
 Pattern (very common):
+
 ```jsx
 // Child
 function CustomButton({ onCustomAction }) {
@@ -2060,15 +2179,1134 @@ function Parent() {
   return <CustomButton onCustomAction={handleCustom} />;
 }
 ```
+
 For more complex needs (pub/sub across distant components), use :
+
 - Context + state
 - Custom hooks
 - State management libraries (Zustand, Jotai, Redux)
 
 **Best practices (2026 React) :**
+
 - Prefer named handler functions over inline arrows when passing to children
 - Use `useCallback` for expensive or frequently passed handlers
 - Always `e.preventDefault()` for form submit and anchor tags when needed
 - Avoid `e.persist()` — prefer capturing values early
 - Keep event handlers small and focused — move complex logic to custom hooks or state updaters
+
 ---
+
+## 8. <u> Conditional Rendering </u> -
+
+- Conditional rendering in React refers to showing or hiding parts of the UI based on certain conditions (usually state, props, or other data). React has **no built-in directives** like `v-if` (Vue) or `*ngIf` (Angular). Instead, you use plain JavaScript control flow inside JSX or before the `return` statement.
+- All techniques below rely on the fact that JSX expressions can evaluate to:
+- JSX elements
+- Strings / numbers
+- `null` / `undefined` / `false` / `true` → these are **not rendered** in the DOM
+
+---
+
+## 80. if Statements :
+
+- Use regular `if` statements **outside** the JSX `return` to decide what to render.
+- Most readable for complex logic or multiple branches.
+
+```jsx
+function Dashboard({ isLoggedIn, userRole }) {
+  let content;
+
+  if (!isLoggedIn) {
+    content = <LoginPrompt />;
+  } else if (userRole === "admin") {
+    content = <AdminPanel />;
+  } else if (userRole === "moderator") {
+    content = <ModeratorTools />;
+  } else {
+    content = <UserDashboard />;
+  }
+
+  return (
+    <div className="dashboard">
+      <h1>Welcome</h1>
+      {content}
+    </div>
+  );
+}
+```
+
+- Alternative : Early return pattern (very common)
+
+```jsx
+function Profile({ user }) {
+  if (!user) {
+    return <div>Please log in to view your profile.</div>;
+  }
+
+  if (user.isBanned) {
+    return <div>Your account has been suspended.</div>;
+  }
+
+  return (
+    <div>
+      <h1>{user.name}</h1>
+      <p>Location: {user.location}</p>
+    </div>
+  );
+}
+```
+
+- **When to use** : Complex conditions, multiple return paths, early exits.
+
+---
+
+## 81. Ternary Operator :
+
+- The most common inline conditional pattern in JSX.
+- Syntax : `condition ? trueExpression : falseExpression`
+
+```jsx
+function Greeting({ isLoggedIn, name = "Guest" }) {
+  return (
+    <div>
+      {isLoggedIn ? <h1>Welcome back, {name}!</h1> : <h1>Please sign in</h1>}
+
+      <p>You are {isLoggedIn ? "logged in" : "not logged in"}.</p>
+    </div>
+  );
+}
+```
+
+- Nested ternaries (use sparingly — can become hard to read) :
+
+```jsx
+{
+  status === "loading" ? (
+    <Spinner />
+  ) : status === "error" ? (
+    <ErrorMessage message="Failed to load data" />
+  ) : (
+    <DataList items={items} />
+  );
+}
+```
+
+- **Best practice**: Keep ternaries shallow (1–2 levels). Extract to variables or early returns for deeper logic.
+
+---
+
+## 82. Logical && Operator :
+
+- _Short-circuit evaluation_ : renders the right side **only if** the left side is truthy.
+- Very popular for "show this if condition is true, otherwise nothing".
+
+```jsx
+function Notification({ unreadCount }) {
+  return (
+    <div>
+      <h2>Messages</h2>
+      {unreadCount > 0 && <span className="badge">{unreadCount} new</span>}
+      {isAdmin && <AdminToolbar />}
+    </div>
+  );
+}
+```
+
+- Also useful with falsy checks :
+
+```jsx
+{
+  error && <div className="error">{error}</div>;
+}
+{
+  items.length === 0 && <p>No items found.</p>;
+}
+```
+
+- **Caution** : Be careful with `0`, `""`, etc. — they are falsy.
+
+```jsx
+{
+  count && <p>You have {count} items</p>;
+} // Won't show when count = 0
+```
+
+- Fix : Use explicit comparison
+
+```jsx
+{
+  count !== 0 && <p>You have {count} items</p>;
+}
+{
+  !!count && <p>You have {count} items</p>;
+} // double negation
+```
+
+---
+
+## 83. Switch Statements :
+
+- Use `switch` **outside** JSX when you have many discrete cases.
+
+```jsx
+function StatusBadge({ status }) {
+  let badgeClass;
+  let label;
+
+  switch (status) {
+    case "success":
+      badgeClass = "bg-green-500";
+      label = "Success";
+      break;
+    case "warning":
+      badgeClass = "bg-yellow-500";
+      label = "Warning";
+      break;
+    case "error":
+      badgeClass = "bg-red-500";
+      label = "Error";
+      break;
+    default:
+      badgeClass = "bg-gray-500";
+      label = "Unknown";
+  }
+  return <span className={`badge ${badgeClass}`}>{label}</span>;
+}
+```
+
+- Alternative: Object lookup (often cleaner)
+
+```jsx
+const statusStyles = {
+  success: { class: "bg-green-500", label: "Success" },
+  warning: { class: "bg-yellow-500", label: "Warning" },
+  error: { class: "bg-red-500", label: "Error" },
+};
+
+function StatusBadge({ status }) {
+  const style = statusStyles[status] || {
+    class: "bg-gray-500",
+    label: "Unknown",
+  };
+  return <span className={`badge ${style.class}`}>{style.label}</span>;
+}
+```
+
+## 84. Conditional Components :
+
+- Render different component types based on condition.
+
+```jsx
+function PageContent({ role }) {
+  return (
+    <main>
+      {role === "admin" ? <AdminView /> : <UserView />}
+      {/* or */}
+      {role === "admin" && <AdminOnlyFeatures />}
+    </main>
+  );
+}
+```
+
+- Also common : Conditional import (dynamic) with `React.lazy` + `Suspense`
+
+```jsx
+const AdminPanel = React.lazy(() => import("./AdminPanel"));
+
+return isAdmin ? (
+  <Suspense fallback={<Loading />}>
+    <AdminPanel />
+  </Suspense>
+) : (
+  <RegularDashboard />
+);
+```
+
+---
+
+## 85. Guard Clauses :
+
+- Guard clauses are early returns that handle invalid/edge cases first.
+- Very clean pattern for components with preconditions.
+
+```jsx
+function UserProfile({ user, isLoading }) {
+  if (isLoading) return <LoadingSpinner />;
+  if (!user) return <NotFound message="User not found" />;
+  if (user.isPrivate && !user.isFriend) {
+    return <PrivateProfileMessage />;
+  }
+
+  // Main render
+  return (
+    <div>
+      <Avatar src={user.avatar} />
+      <h1>{user.name}</h1>
+      {/* ... */}
+    </div>
+  );
+}
+```
+
+---
+
+## 86. Conditional Styling :
+
+- Apply classes or inline styles conditionally.
+
+1. **Class names** (most common) :
+
+   ```jsx
+   <div className={`card ${isFeatured ? "featured" : ""} ${isDark ? "dark-mode" : ""}`}>
+   ```
+
+   Libraries that help :
+   - `clsx` / `classnames`
+   - Tailwind merge (`twMerge`, `cn` helper)
+
+   ```jsx
+   import { cn } from "@/lib/utils";
+
+   <div className={cn("card", isFeatured && "featured", isDark && "dark-mode")}>
+   ```
+
+2. **Inline styles** :
+   ```jsx
+   <div style={{
+     backgroundColor: isActive ? "#4CAF50" : "#f44336",
+     fontWeight: important ? "bold" : "normal",
+     opacity: disabled ? 0.6 : 1
+   }}>
+   ```
+
+---
+
+## 87. Conditional Props :
+
+- Pass props conditionally (very common pattern).
+
+```jsx
+<Button
+  variant={isPrimary ? "primary" : "secondary"}
+  disabled={isSubmitting || !isValid}
+  size={isMobile ? "small" : "medium"}
+  onClick={handleSubmit}
+  {...(isLoading && { "aria-busy": "true" })}
+/>
+```
+
+- Spread pattern for multiple conditional props :
+
+```jsx
+const extraProps = {
+  ...(isError && { "aria-invalid": true, "aria-describedby": "error-msg" }),
+  ...(isSuccess && { "aria-describedby": "success-msg" }),
+};
+
+return <input {...extraProps} />;
+```
+
+**Summary Table – When to Use Which** :
+
+| Technique         | Best For                            | Inline? | Readability | Complexity |
+| ----------------- | ----------------------------------- | ------- | ----------- | ---------- |
+| Early return / if | Preconditions, loading/error states | No      | High        | Any        |
+| Ternary           | Simple two-way choice               | Yes     | Good        | Low–Medium |
+| && operator       | Show/hide single element            | Yes     | Excellent   | Low        |
+| Object lookup     | Many fixed cases                    | No      | High        | Medium     |
+| Guard clauses     | Defensive component entry           | No      | Very high   | Any        |
+| cn/clsx helpers   | Complex class names                 | Yes     | Excellent   | Any        |
+
+---
+
+## 9. <u> Lists & Keys </u> -
+
+- Rendering lists is one of the most common tasks in React applications. React provides powerful patterns for efficiently displaying, updating, and managing dynamic collections of data (arrays of objects, items, etc.).
+- The core mechanism for rendering lists in React is using JavaScript's `Array.map()` inside JSX, combined with the special `key` prop.
+
+---
+
+## 88. Rendering Lists :
+
+- To render a list of items, you typically:
+
+1. Have an array of data
+2. Use `.map()` to transform each item into a React element
+3. Return the resulting array of elements inside JSX (React knows how to render arrays of elements)
+
+Basic example:
+
+```jsx
+function TodoList() {
+  const todos = [
+    { id: 1, text: "Learn React" },
+    { id: 2, text: "Build a project" },
+    { id: 3, text: "Deploy to production" },
+  ];
+
+  return (
+    <ul>
+      {todos.map((todo) => (
+        <li>{todo.text}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+Important rules :
+
+- The result of `.map()` must be placed directly inside JSX (or assigned to a variable first)
+- Each child in an array or iterator must have a unique `key` prop (see below)
+
+---
+
+## 89. Array.map() :
+
+- `Array.map()` is the most idiomatic way to render lists in React.
+
+```jsx
+const products = [
+  { id: "p1", name: "Laptop", price: 1299 },
+  { id: "p2", name: "Phone", price: 799 },
+  { id: "p3", name: "Headphones", price: 199 },
+];
+
+return (
+  <div className="product-grid">
+    {products.map((product) => (
+      <div key={product.id} className="product-card">
+        <h3>{product.name}</h3>
+        <p>${product.price}</p>
+      </div>
+    ))}
+  </div>
+);
+```
+
+- You can also destructure inside the map :
+
+```jsx
+{
+  products.map(({ id, name, price }) => (
+    <div key={id}>
+      <h3>{name}</h3>
+      <p>${price}</p>
+    </div>
+  ));
+}
+```
+
+---
+
+## 90. Keys Importance :
+
+- The `key` prop is a special string attribute you **must** provide when rendering arrays of elements. Keys help React identify **which items have changed, been added, or been removed**.
+
+Without proper keys, React falls back to index-based diffing → leading to bugs:
+
+- Wrong items re-rendered
+- State lost in components (e.g., form focus, animations)
+- Unnecessary DOM mutations → performance issues
+
+Correct :
+
+```jsx
+{
+  todos.map((todo) => <TodoItem key={todo.id} todo={todo} />);
+}
+```
+
+- React uses keys during the reconciliation (diffing) process to match old and new VDOM trees efficiently.
+
+---
+
+## 91. Stable Keys :
+
+Keys must be :
+
+- **Unique** - among siblings (not globally unique, just within the same list)
+- **Stable** - consistent across renders for the same item
+- **Predictable** - not random or changing
+
+Best practice : Use a **stable, unique identifier** from your data (usually an ID from database, UUID, etc.).
+
+- Good examples :
+
+```jsx
+key={item.id}              // database ID (best)
+key={item.slug}            // unique URL-friendly string
+key={`${category}-${item.id}`}  // composite key when needed
+```
+
+Bad examples :
+
+```jsx
+key={Math.random()}        // changes every render → terrible
+key={new Date().getTime()} // changes every render
+key={index}                // see next section
+```
+
+---
+
+## 92. Index as Key (Pitfalls) :
+
+- Using the array index as `key` is a common anti-pattern when the list can **reorder, filter, sort, add/remove items**.
+
+Why it fails :
+
+```jsx
+{
+  todos.map((todo, index) => <li key={index}>{todo.text}</li>);
+}
+```
+
+Problems when :
+
+- Items are reordered → React thinks different items moved
+- Items are inserted/removed in the middle → wrong components get state
+- Components have internal state (inputs, animations) → state jumps to wrong item
+
+Real-world bug example:
+
+```jsx
+// Initial list: ["Apples", "Bananas"]
+// User checks "Apples" (checkbox state stored in component)
+// New list after sort: ["Bananas", "Apples"]
+// → Checkbox now appears checked on "Bananas" because index 0 moved
+```
+
+**Rule of thumb** :
+
+- Use index as key **only** when :
+  - The list is **static** (never reorders, filters, or has items added/removed)
+  - Items have **no internal state**
+  - List is purely presentational
+
+- Otherwise → always prefer a real ID.
+
+---
+
+## 93. Nested Lists :
+
+- Rendering lists inside lists is common (e.g., categories with items).
+- Just apply the same rules at each level :
+
+```jsx
+const categories = [
+  {
+    id: "c1",
+    name: "Fruits",
+    items: [
+      { id: "f1", name: "Apple" },
+      { id: "f2", name: "Banana" },
+    ],
+  },
+  {
+    id: "c2",
+    name: "Vegetables",
+    items: [{ id: "v1", name: "Carrot" }],
+  },
+];
+
+return (
+  <div>
+    {categories.map((category) => (
+      <div key={category.id}>
+        <h2>{category.name}</h2>
+        <ul>
+          {category.items.map((item) => (
+            <li key={item.id}>{item.name}</li>
+          ))}
+        </ul>
+      </div>
+    ))}
+  </div>
+);
+```
+
+- Each level needs its own unique `key`.
+
+---
+
+## 94. Conditional Lists :
+
+- Combine list rendering with conditional rendering patterns :
+
+```jsx
+function TodoList({ todos, isLoading, error }) {
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error}</p>;
+  if (todos.length === 0) return <p>No todos yet. Add one!</p>;
+
+  return (
+    <ul>
+      {todos.map((todo) => (
+        <TodoItem key={todo.id} todo={todo} />
+      ))}
+    </ul>
+  );
+}
+```
+
+- Or inline :
+
+```jsx
+<ul>
+  {todos.length > 0 ? (
+    todos.map((todo) => <li key={todo.id}>{todo.text}</li>)
+  ) : (
+    <li>No items found</li>
+  )}
+</ul>
+```
+
+---
+
+## 95. Dynamic Lists :
+
+- Dynamic lists change based on user actions (add, remove, filter, sort).
+- Use state to manage the array :
+
+```jsx
+function DynamicTodoList() {
+  const [todos, setTodos] = useState([
+    { id: crypto.randomUUID(), text: "Learn keys" },
+  ]);
+
+  const addTodo = () => {
+    const newTodo = { id: crypto.randomUUID(), text: "New task" };
+    setTodos((prev) => [...prev, newTodo]);
+  };
+
+  const removeTodo = (id) => {
+    setTodos((prev) => prev.filter((t) => t.id !== id));
+  };
+
+  return (
+    <div>
+      <button onClick={addTodo}>Add Todo</button>
+      <ul>
+        {todos.map((todo) => (
+          <li key={todo.id}>
+            {todo.text}
+            <button onClick={() => removeTodo(todo.id)}>×</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+```
+
+- Use `crypto.randomUUID()` (modern browsers) or a library like `uuid` for stable IDs when no backend ID exists.
+
+---
+
+## 96. Filtering Lists :
+
+- Filter the array before mapping :
+
+```jsx
+function FilteredTodos({ todos, searchTerm }) {
+  const filteredTodos = todos.filter((todo) =>
+    todo.text.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
+  return (
+    <ul>
+      {filteredTodos.map((todo) => (
+        <li key={todo.id}>{todo.text}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+- Or inline :
+
+```jsx
+<ul>
+  {todos
+    .filter((todo) => !todo.completed)
+    .map((todo) => (
+      <li key={todo.id}>{todo.text}</li>
+    ))}
+</ul>
+```
+
+---
+
+## 97. Sorting Lists :
+
+- Sort before rendering (create a new array) :
+
+```jsx
+const sortedTodos = [...todos].sort((a, b) => {
+  if (sortBy === "name") {
+    return a.text.localeCompare(b.text);
+  }
+  return b.createdAt - a.createdAt; // newest first
+});
+
+return (
+  <ul>
+    {sortedTodos.map((todo) => (
+      <li key={todo.id}>{todo.text}</li>
+    ))}
+  </ul>
+);
+```
+
+- **Important**: Never mutate the original state array directly — always create a copy.
+
+---
+
+## 10. <u> Styling in React </u> -
+- React offers multiple approaches to styling components, ranging from traditional CSS to modern CSS-in-JS solutions. Each method has its strengths, trade-offs, and best use cases. The choice often depends on project size, team preferences, performance requirements, and whether you want scoped styles, theming, or utility-first development.
+---
+
+## 98. Inline Styles :
+- Inline styles in React are applied directly via the `style` prop, which accepts a **JavaScript object** with camelCase properties.
+```jsx
+function Button({ isActive }) {
+  return (
+    <button
+      style={{ backgroundColor: isActive ? '#4CAF50' : '#f44336', color: 'white',
+        padding: '12px 24px', border: 'none', borderRadius: '4px',
+        fontSize: '16px', cursor: 'pointer', opacity: isActive ? 1 : 0.6,
+        transition: 'all 0.3s ease' }} >
+      Click me
+    </button>
+  );
+}
+```
+
+**Pros** :
+- Dynamic styling is trivial (values from state/props)
+- No extra files or build steps
+- Scoped to the component
+
+**Cons** :
+- No pseudo-classes (`:hover`, `:focus`) or media queries
+- Harder to maintain for large components
+- No caching/reuse of styles
+- Verbose syntax (camelCase, no shorthand like `padding: 12px 24px`)
+- Best for : Small components, dynamic values, prototyping.
+---
+
+## 99. CSS Stylesheets :
+- Classic approach: write CSS in `.css` files and import them.
+```css
+/* styles/Button.css */
+.button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.button-primary {
+  background-color: #4CAF50;
+  color: white;
+}
+.button-danger {
+  background-color: #f44336;
+  color: white;
+}
+```
+```jsx
+import './Button.css';
+
+function Button({ variant = 'primary' }) {
+  return <button className={`button button-${variant}`}>Click me</button>;
+}
+```
+
+**Pros**:
+- Familiar to everyone
+- Full CSS features (pseudo-classes, media queries, animations)
+- Easy to share across components
+
+**Cons**:
+- Global namespace → class name collisions possible
+- No automatic scoping
+- Harder to make truly dynamic
+- Best for: Small projects, teams already comfortable with plain CSS.
+---
+
+## 100. CSS Modules :
+- CSS Modules solve the global namespace problem by **automatically generating unique class names**.
+```css
+/* Button.module.css */
+.button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+}
+.primary {
+  background-color: #4CAF50;
+  color: white;
+}
+.danger {
+  background-color: #f44336;
+  color: white;
+}
+```
+```jsx
+import styles from './Button.module.css';
+
+function Button({ variant = 'primary' }) {
+  return (
+    <button className={`${styles.button} ${styles[variant]}`}>
+      Click me
+    </button>
+  );
+}
+```
+
+**Pros**:
+- Locally scoped class names (no collisions)
+- Clear connection between CSS and component
+- Works with all CSS features
+
+**Cons**:
+- Slightly more verbose imports
+- Requires build tool support (Create React App, Vite, Next.js all support it)
+- Best for : Medium to large projects that want scoped CSS without CSS-in-JS.
+---
+
+## 101. Styled Components :
+- A popular **CSS-in-JS** library that lets you write actual CSS inside JavaScript and creates styled components.
+```jsx
+import styled from 'styled-components';
+
+const Button = styled.button`
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: ${props => props.variant === 'primary' ? '#4CAF50' : '#f44336'};
+  color: white;
+  transition: all 0.3s ease;
+  &:hover {
+    opacity: 0.9;
+  }
+`;
+
+function App() {
+  return <Button variant="primary">Click me</Button>;
+}
+```
+
+**Pros**:
+- Full CSS support + dynamic props
+- Automatic scoping (unique class names)
+- Theming support via `ThemeProvider`
+- Great developer experience (colocation of styles and component)
+
+**Cons**:
+- Runtime overhead (styles injected at runtime)
+- Larger bundle size
+- Learning curve if new to CSS-in-JS
+---
+
+## 102. Emotion :
+- Emotion is a lightweight, performant CSS-in-JS library with two main APIs: `styled` (like styled-components) and `css` prop.
+
+```jsx
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react';
+
+const buttonStyles = css`
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+  background-color: #4CAF50;
+  color: white;
+
+  &:hover {
+    background-color: #45a049;
+  }
+`;
+
+function Button() {
+  return <button css={buttonStyles}>Click me</button>;
+}
+```
+- Or using `styled` :
+```jsx
+import styled from '@emotion/styled';
+
+const Button = styled.button`
+  padding: 12px 24px;
+  /* ... */
+`;
+```
+**Pros** :
+- Very fast (better runtime performance than styled-components)
+- `css` prop is extremely flexible
+- Great TypeScript support
+- Theming via `ThemeProvider`
+- Best for: Performance-sensitive apps, modern React projects.
+---
+
+## 103. SCSS/SASS :
+- **SASS extends CSS** with variables, nesting, mixins, etc. Use with `.scss` files and CSS Modules or plain imports.
+```scss
+// Button.module.scss
+$primary: #4CAF50;
+$danger: #f44336;
+
+.button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 4px;
+
+  &.primary {
+    background-color: $primary;
+    color: white;
+  }
+
+  &.danger {
+    background-color: $danger;
+    color: white;
+  }
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+```
+```jsx
+import styles from './Button.module.scss';
+
+<button className={`${styles.button} ${styles.primary}`}>Click me</button>
+```
+**Pros**:
+- Powerful features (variables, nesting, mixins, functions)
+- Familiar to CSS developers
+- Works well with CSS Modules
+
+**Cons**:
+- Requires build tool support
+- Still global unless using modules
+---
+
+## 104. Tailwind CSS :
+
+Utility-first CSS framework — write styles using class names directly in JSX.
+
+```jsx
+<button
+  className={`
+    px-6 py-3 rounded-md font-medium text-white transition
+    ${isPrimary 
+      ? 'bg-green-600 hover:bg-green-700' 
+      : 'bg-red-600 hover:bg-red-700'}
+    ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+  `}
+>
+  Click me
+</button>
+```
+
+With Tailwind + `clsx`/`cn` helper:
+
+```jsx
+import { cn } from '@/lib/utils';
+
+<button
+  className={cn(
+    "px-6 py-3 rounded-md font-medium text-white transition",
+    isPrimary ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700",
+    disabled && "opacity-50 cursor-not-allowed"
+  )}
+>
+  Click me
+</button>
+```
+
+**Pros**:
+- Extremely fast development
+- Consistent design
+- No context switching between CSS and JSX
+- Excellent responsive utilities
+
+**Cons**:
+- Long class strings
+- Requires discipline to avoid bloat
+- Learning curve for utility classes
+
+### CSS-in-JS
+
+General term for libraries that let you write CSS in JavaScript (Emotion, styled-components, JSS, Linaria, Vanilla Extract, etc.).
+
+**Advantages**:
+- Scoped styles
+- Dynamic values via props/state
+- Theming
+- Colocation (styles next to component)
+
+**Disadvantages**:
+- Runtime cost (some libraries)
+- Larger bundles
+- Different mental model than traditional CSS
+
+### Dynamic Styling
+
+Change styles based on state, props, or runtime values.
+
+Examples:
+
+```jsx
+// Inline
+style={{ color: isActive ? 'green' : 'red' }}
+
+// Tailwind
+className={cn("text-lg", isActive && "font-bold text-green-600")}
+
+// CSS Modules
+className={styles[isActive ? 'active' : 'inactive']}
+
+// Emotion
+css`color: ${isActive ? 'green' : 'red'};`
+```
+
+### Conditional Styling
+
+Combine dynamic + conditional patterns (see section 8 for more examples).
+
+```jsx
+<div
+  className={cn(
+    "p-4 rounded-lg",
+    isSuccess ? "bg-green-100 border-green-500" :
+    isError   ? "bg-red-100 border-red-500" :
+                "bg-gray-100 border-gray-300"
+  )}
+>
+  {message}
+</div>
+```
+
+### Global Styles
+
+Apply styles that affect the entire app (reset, typography, etc.).
+
+Common approaches:
+- Import a global CSS file in `index.js` / `main.tsx`
+
+  ```jsx
+  import './global.css';
+  ```
+
+- Use `:root` or `body` selectors
+
+- Styled-components `createGlobalStyle`
+
+  ```jsx
+  import { createGlobalStyle } from 'styled-components';
+
+  const GlobalStyle = createGlobalStyle`
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+    }
+  `;
+  ```
+
+### Theming
+
+Centralized theme management for consistent colors, typography, spacing.
+
+Common solutions:
+- **styled-components / Emotion** `ThemeProvider`
+
+  ```jsx
+  <ThemeProvider theme={{ colors: { primary: '#4CAF50' } }}>
+    <App />
+  </ThemeProvider>
+  ```
+
+- **Tailwind** with custom config (`tailwind.config.js`)
+
+- **CSS Variables** (see below)
+
+### CSS Variables (Custom Properties)
+
+Modern, powerful way to handle theming and dynamic styles.
+
+```css
+/* global.css */
+:root {
+  --primary: #4CAF50;
+  --danger: #f44336;
+  --spacing-unit: 8px;
+}
+
+.dark {
+  --primary: #66BB6A;
+}
+```
+
+```jsx
+<button style={{ backgroundColor: 'var(--primary)' }}>Click</button>
+```
+
+Or in Tailwind:
+
+```jsx
+<div className="bg-[--primary] text-white">Themed</div>
+```
+
+**Advantages**: Works everywhere, dynamic updates via JS, great for dark mode.
+
+### Responsive Design in React
+
+Common patterns:
+
+1. **Tailwind responsive utilities**
+
+   ```jsx
+   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+   ```
+
+2. **Media queries in CSS/SCSS**
+
+   ```scss
+   .container {
+     padding: 1rem;
+     @media (min-width: 768px) {
+       padding: 2rem;
+     }
+   }
+   ```
+
+3. **useMediaQuery** hook (custom or from libraries like `react-responsive`)
+
+   ```jsx
+   const isMobile = useMediaQuery('(max-width: 768px)');
+
+   return isMobile ? <MobileNav /> : <DesktopNav />;
+   ```
+
+4. **CSS Container Queries** (emerging, modern browsers)
+
+Best practice: Prefer utility-first (Tailwind) or CSS variables + media queries for maintainable responsive design.
+
+**Summary – Choosing a Styling Approach (2026 React)**
+
+| Approach             | Best For                              | Scoping | Dynamic | Theming | Bundle Size | Learning Curve |
+|----------------------|---------------------------------------|---------|---------|---------|-------------|----------------|
+| Inline               | Small components, prototyping         | Yes     | Excellent | Poor    | None        | Low            |
+| Plain CSS            | Small apps, traditional teams         | No      | Poor    | Poor    | None        | Low            |
+| CSS Modules          | Medium/large apps, scoped CSS         | Yes     | Good    | Poor    | None        | Medium         |
+| Styled Components    | Theming, colocation, large apps       | Yes     | Excellent | Excellent | Medium      | Medium         |
+| Emotion              | Performance, modern apps              | Yes     | Excellent | Excellent | Small       | Medium         |
+| Tailwind CSS         | Rapid development, design systems     | No*     | Excellent | Excellent | Small–Medium| Medium         |
+| SCSS + Modules       | Teams that love SASS features         | Yes     | Good    | Poor    | None        | Medium         |
+
+*Tailwind can be scoped with `@apply` or component libraries.
+
+Most modern React projects in 2026 use **Tailwind CSS** (utility-first) or **Emotion** / **styled-components** (CSS-in-JS) for their flexibility, developer experience, and theming capabilities.
