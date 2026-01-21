@@ -3369,3 +3369,898 @@ css`color: ${isActive ? 'green' : 'red'};`
 - \*Tailwind can be scoped with `@apply` or component libraries.
 
 ---
+
+## 11. <u> Forms </u> -
+
+- Forms are a core part of most interactive React applications. React provides two main philosophies for managing form inputs: **controlled** and **uncontrolled**. Controlled inputs are overwhelmingly preferred in modern React because they give you full control over the form state, make validation easier, enable dynamic behavior, and keep the UI in sync with the application state.
+
+---
+
+## 112. Controlled Inputs :
+
+- A controlled input is one where **React is the single source of truth** for the input's value. The value is stored in React state, and every change updates that state via an `onChange` handler.
+
+Key characteristics :
+
+- `value` prop is set from state
+- `onChange` handler updates state
+- React drives the input — never the DOM
+
+Basic example (single input) :
+
+```jsx
+import { useState } from "react";
+
+function NameForm() {
+  const [name, setName] = useState("");
+
+  const handleChange = (e) => {
+    setName(e.target.value);
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert(`Submitted name: ${name}`);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        {" "}
+        Name:
+        <input
+          type="text"
+          value={name}
+          onChange={handleChange}
+          placeholder="Enter your name"
+        />
+      </label>
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+```
+
+Advantages :
+
+- Instant validation & feedback
+- Easy to reset, clear, or pre-fill
+- Consistent state across re-renders
+- Works perfectly with derived state and conditional rendering
+
+---
+
+## 113 Uncontrolled Inputs :
+
+- An uncontrolled input lets the **DOM manage its own value**. You access the value only when needed (usually on submit) via a ref.
+
+Example :
+
+```jsx
+import { useRef } from "react";
+
+function UncontrolledNameForm() {
+  const nameRef = useRef(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    alert(`Submitted name: ${nameRef.current.value}`);
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        {" "}
+        Name:
+        <input
+          type="text"
+          ref={nameRef}
+          defaultValue="Akhil" // optional initial value
+          placeholder="Enter your name"
+        />
+      </label>
+      <button type="submit">Submit</button>
+    </form>
+  );
+}
+```
+
+When to use uncontrolled :
+
+- Simple forms with no validation or real-time feedback
+- Integrating legacy/non-React code
+- File inputs (almost always uncontrolled)
+- Performance in very large forms (rare)
+- **Modern recommendation** : Use **controlled** inputs for almost everything except file inputs.
+
+---
+
+## 114. Form State Management :
+
+- Managing multiple inputs efficiently is a common challenge.
+- Approaches :
+
+1. **Multiple useState hooks** (simple forms) :
+
+   ```jsx
+   const [name, setName] = useState("");
+   const [email, setEmail] = useState("");
+   const [age, setAge] = useState("");
+   ```
+
+2. **Single object state** (most common for medium forms) :
+
+   ```jsx
+   const [formData, setFormData] = useState({
+     name: "",
+     email: "",
+     age: "",
+     newsletter: false,
+   });
+
+   const handleChange = (e) => {
+     const { name, value, type, checked } = e.target;
+     setFormData((prev) => ({
+       ...prev,
+       [name]: type === "checkbox" ? checked : value,
+     }));
+   };
+   ```
+
+3. **useReducer** (complex forms with interdependent logic) :
+
+   ```jsx
+   const initialState = { name: "", email: "", submitted: false };
+
+   function formReducer(state, action) {
+     switch (action.type) {
+       case "UPDATE_FIELD":
+         return { ...state, [action.field]: action.value };
+       case "RESET":
+         return initialState;
+       default:
+         return state;
+     }
+   }
+   ```
+
+4. **Form libraries** (large/complex apps)
+   - React Hook Form (lightweight, performant, great validation)
+   - Formik (feature-rich, but heavier)
+   - Zod + React Hook Form (type-safe validation)
+
+---
+
+## 115. Input Types :
+
+- HTML input types supported in React (controlled unless noted) :
+- `text`, `password`, `email`, `tel`, `url`, `search`, `number`
+- `date`, `datetime-local`, `month`, `week`, `time`
+- `checkbox`, `radio`
+- `file` (always uncontrolled)
+- `hidden`, `color`, `range`
+- All controlled inputs follow the same pattern: `value` + `onChange`.
+
+---
+
+## 116. Text Inputs :
+
+```jsx
+<input
+  type="text"
+  value={formData.name}
+  onChange={handleChange}
+  name="name"
+  placeholder="Your full name"
+  maxLength={50}
+  required
+/>
+```
+
+- Common attributes: `placeholder`, `maxLength`, `minLength`, `pattern`, `autoComplete`, `autoFocus`
+
+---
+
+## 117. Checkbox Inputs :
+
+- Single checkbox :
+
+```jsx
+<label>
+  <input
+    type="checkbox"
+    name="newsletter"
+    checked={formData.newsletter}
+    onChange={handleChange}
+  />
+  Subscribe to newsletter
+</label>
+```
+
+- Multiple checkboxes (array in state) :
+
+```jsx
+const [interests, setInterests] = useState([]);
+
+const handleCheckbox = (e) => {
+  const { value, checked } = e.target;
+  setInterests((prev) =>
+    checked ? [...prev, value] : prev.filter((v) => v !== value),
+  );
+};
+
+return (
+  <>
+    <label>
+      <input
+        type="checkbox"
+        value="react"
+        checked={interests.includes("react")}
+        onChange={handleCheckbox}
+      />
+      React
+    </label>
+    <label>
+      <input
+        type="checkbox"
+        value="tailwind"
+        checked={interests.includes("tailwind")}
+        onChange={handleCheckbox}
+      />
+      Tailwind CSS
+    </label>
+  </>
+);
+```
+
+---
+
+## 118. Radio Buttons :
+
+- Radio buttons in a group share the same `name` attribute.
+
+```jsx
+const [gender, setGender] = useState("");
+
+return (
+  <div>
+    <label>
+      <input
+        type="radio"
+        name="gender"
+        value="male"
+        checked={gender === "male"}
+        onChange={(e) => setGender(e.target.value)}
+      />{" "}
+      Male
+    </label>
+    <label>
+      <input
+        type="radio"
+        name="gender"
+        value="female"
+        checked={gender === "female"}
+        onChange={(e) => setGender(e.target.value)}
+      />{" "}
+      Female
+    </label>
+  </div>
+);
+```
+
+---
+
+## 119. Select Dropdowns :
+
+- Single select :
+
+```jsx
+<select value={formData.role} onChange={handleChange} name="role">
+  <option value="">Select role</option>
+  <option value="developer">Developer</option>
+  <option value="designer">Designer</option>
+  <option value="manager">Manager</option>
+</select>
+```
+
+- Multiple select (`multiple` attribute + array state) :
+
+```jsx
+<select
+  multiple
+  value={formData.skills}
+  onChange={(e) => {
+    const options = [...e.target.selectedOptions].map((o) => o.value);
+    setFormData((prev) => ({ ...prev, skills: options }));
+  }}
+>
+  <option value="react">React</option>
+  <option value="node">Node.js</option>
+  <option value="sql">SQL</option>
+</select>
+```
+
+---
+
+## 120. Textareas :
+
+```jsx
+<textarea
+  value={formData.message}
+  onChange={handleChange}
+  name="message"
+  rows={6}
+  placeholder="Your message here..."
+/>
+```
+
+- Behaves exactly like `<input type="text">` for controlled usage.
+
+---
+
+## 121. File Inputs :
+
+- File inputs are **always uncontrolled** — React cannot set their value for security reasons.
+
+```jsx
+function FileUpload() {
+  const fileInputRef = useRef(null);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const file = fileInputRef.current.files[0];
+    if (file) {
+      console.log("Selected file:", file.name, file.size);
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input type="file" ref={fileInputRef} accept=".pdf,.jpg,.png" multiple />
+      <button type="submit">Upload</button>
+    </form>
+  );
+}
+```
+
+- Use libraries like `react-dropzone` for drag-and-drop UX.
+
+---
+
+## 122. Form Validation :
+
+- Two main layers :
+
+1. **HTML5 validation** (browser built-in)
+2. **Custom validation** (application logic)
+
+---
+
+## 123. HTML5 Validation :
+
+```jsx
+<input
+  type="email"
+  required
+  minLength={5}
+  maxLength={100}
+  pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+  title="Please enter a valid email"
+/>
+```
+
+Common attributes :
+
+- `required`
+- `min`, `max`, `minLength`, `maxLength`
+- `pattern`
+- `type="email"`, `url`, `tel`, etc.
+- Use `:invalid` pseudo-class for styling.
+
+---
+
+## 124. Custom Validation :
+
+- Most apps need more than HTML5 offers.
+- Patterns :
+
+1. **On change + on submit** (real-time + final check) :
+
+   ```jsx
+   const [errors, setErrors] = useState({});
+
+   const validate = () => {
+     const newErrors = {};
+     if (!formData.name.trim()) newErrors.name = "Name is required";
+     if (!/\S+@\S+\.\S+/.test(formData.email))
+       newErrors.email = "Invalid email";
+     setErrors(newErrors);
+     return Object.keys(newErrors).length === 0;
+   };
+
+   const handleSubmit = (e) => {
+     e.preventDefault();
+     if (validate()) {
+       // submit
+     }
+   };
+   ```
+
+2. **Using React Hook Form + Zod** (recommended 2026 pattern) :
+
+   ```jsx
+   import { useForm } from "react-hook-form";
+   import { zodResolver } from "@hookform/resolvers/zod";
+   import * as z from "zod";
+
+   const schema = z.object({
+     name: z.string().min(2, "Name must be at least 2 characters"),
+     email: z.string().email("Invalid email address"),
+     age: z.number().min(18, "Must be 18 or older"),
+   });
+
+   function MyForm() {
+     const {
+       register,
+       handleSubmit,
+       formState: { errors },
+     } = useForm({
+       resolver: zodResolver(schema),
+     });
+
+     const onSubmit = (data) => console.log(data);
+
+     return (
+       <form onSubmit={handleSubmit(onSubmit)}>
+         <input {...register("name")} />
+         {errors.name && <p>{errors.name.message}</p>}
+         {/* ... */}
+         <button type="submit">Submit</button>
+       </form>
+     );
+   }
+   ```
+
+---
+
+## 125. Form Submission :
+
+- Always prevent default behavior :
+
+```jsx
+<form onSubmit={(e) => {
+  e.preventDefault();
+  // handle submission
+}}>
+```
+
+Common patterns :
+
+- `fetch` / `axios` POST request
+- Disable button while submitting (`isSubmitting` state)
+- Show success/error messages
+- Reset form after success
+
+---
+
+## 126. Handling Multiple Inputs :
+
+- Use one `handleChange` with dynamic `[name]` :
+
+```jsx
+const handleChange = (e) => {
+  const { name, value, type, checked } = e.target;
+  setFormData((prev) => ({
+    ...prev,
+    [name]:
+      type === "checkbox" ? checked : type === "number" ? Number(value) : value,
+  }));
+};
+```
+
+- Then apply to all inputs :
+
+```jsx
+<input name="name" value={formData.name} onChange={handleChange} />
+<input name="email" type="email" value={formData.email} onChange={handleChange} />
+<input type="checkbox" name="terms" checked={formData.terms} onChange={handleChange} />
+```
+
+---
+
+## 127. Resetting Forms :
+
+- Ways to reset :
+
+1. **Set state back to initial** :
+   ```jsx
+   const resetForm = () => {
+     setFormData({
+       name: "",
+       email: "",
+       message: "",
+     });
+   };
+   ```
+2. **Using form ref + HTML reset** :
+
+   ```jsx
+   const formRef = useRef(null);
+
+   <form ref={formRef}>
+     {/* inputs */}
+   </form>
+
+   <button type="button" onClick={() => formRef.current.reset()}> Reset </button>
+   ```
+
+- Note : Works only for uncontrolled inputs or when combined with state reset.
+
+3. **React Hook Form reset**
+
+   ```jsx
+   const { reset } = useForm();
+   reset(); // or reset({ name: '', email: '' })
+   ```
+
+---
+
+## 12. <u> React Hooks (Core) </u> -
+- React Hooks, introduced in React 16.8 (2019), allow functional components to use state, lifecycle features, and other React capabilities without classes. Hooks are functions that "hook into" React's state and lifecycle from function components. They promote cleaner, more reusable code and have become the standard way to write React in 2026.
+---
+
+## 128. Hooks Rules :
+- Hooks follow strict rules to ensure they work correctly with React's rendering and reconciliation :
+1. **Only Call Hooks at the Top Level** :
+   Do not call Hooks inside loops, conditions, or nested functions. Always call them at the top of your component function. This ensures Hooks are called in the same order on every render, allowing React to track state correctly.
+   ```jsx
+   // Correct
+   function MyComponent() {
+     const [count, setCount] = useState(0);
+     useEffect(() => { /* ... */ });
+     return <div>{count}</div>;
+   }
+
+   // Incorrect (conditional Hook call)
+   function Bad() {
+     if (condition) {
+       useEffect(() => { /* ... */ }); // React will throw error
+     }
+   }
+   ```
+2. **Only Call Hooks from React Function Components or Custom Hooks**  
+   Not from regular JavaScript functions, class components, or outside components.
+3. **Custom Hooks Must Start with "use"**  
+   This convention helps identify them and enables linting rules (e.g., `eslint-plugin-react-hooks`).
+4. **Hooks Are Not Compatible with Class Components**  
+   But you can mix functional and class components in the same app.
+- React's `eslint-plugin-react-hooks` plugin enforces these rules. Always enable it in your project.
+---
+
+## 129. useState :
+- `useState` adds local state to functional components.
+- Syntax : `const [state, setState] = useState(initialValue);`
+
+- `state`: Current value
+- `setState`: Updater function (accepts new value or function)
+- `initialValue`: Can be primitive, object, array, or lazy function
+- Details : See section 6 for in-depth coverage (initial state, updates, immutability, etc.).
+- Example with lazy init :
+```jsx
+const [user, setUser] = useState(() => loadUserFromLocalStorage());
+```
+- If we try to update an object passed on to the initial state of the useState then we have to update the object by spreading the prevState and then update so that we don't lose the prev state.
+- Or create multiple useStates.
+---
+
+## 130. useEffect :
+- `useEffect` runs side effects (e.g., data fetching, subscriptions, DOM manipulations) after render.
+- Syntax : `useEffect(callback, dependencies);`
+- `callback` : Function with effect code. Can return a cleanup function.
+- `dependencies` : Array of values. Effect runs if any change (or empty [] for mount only).
+
+How it works :
+1. Component renders
+2. DOM updates
+3. `useEffect` callback runs (if deps changed or first render)
+
+Example : Fetch data
+```jsx
+useEffect(() => {
+  const fetchData = async () => {
+    const response = await fetch('/api/data');
+    const data = await response.json();
+    setData(data);
+  };
+  fetchData();
+}, []); // Empty deps → runs once after mount
+```
+```jsx
+useEffect(() => {
+    console.log("Resource Changed");
+
+    return () => {
+        console.log("Return from resource change");
+    }
+}, [resourceType]);
+```
+Common uses :
+- API calls
+- Event listeners (add in callback, remove in cleanup)
+- Timers/intervals
+---
+
+## 131. Effect Dependencies :
+- Dependencies control when the effect re-runs :
+
+- No deps : Runs after every render
+- Empty [] : Runs once after initial render
+- [var1, var2] : Runs after initial + when var1 or var2 changes
+
+Rules :
+- Include **all** values from component scope used in callback (state, props, functions)
+- ESLint `exhaustive-deps` rule helps
+- If a function is a dep, wrap in `useCallback`
+
+Example with dep :
+```jsx
+useEffect(() => {
+  document.title = `You clicked ${count} times`;
+}, [count]); // Re-runs when count changes
+```
+- Omit deps only if you truly want every-render behavior (rare).
+---
+
+## 132. Cleanup Functions :
+- Return a function from the effect callback to clean up (e.g., remove listeners, cancel subscriptions).
+
+Runs:
+- Before next effect run
+- On unmount
+```jsx
+useEffect(() => {
+  const handleResize = () => { /* ... */ };
+  window.addEventListener('resize', handleResize);
+
+  return () => {
+    window.removeEventListener('resize', handleResize);
+  };
+}, []); // Cleanup on unmount
+```
+- Essential for preventing memory leaks in long-lived apps.
+---
+
+## 133. Multiple Effects :
+- Use as many `useEffect` as needed — better than one giant effect.
+```jsx
+useEffect(() => { /* Fetch user */ }, [userId]);
+useEffect(() => { /* Setup subscription */ }, [user]);
+useEffect(() => { /* Update title */ }, [title]);
+```
+- This separates concerns and makes code easier to read/maintain.
+---
+
+## 134. useContext :
+- `useContext` subscribes to React Context values without prop drilling.
+- Syntax : `const value = useContext(MyContext);`
+
+Example :
+```jsx
+// Context creation
+const ThemeContext = createContext('light');
+
+// Provider
+<ThemeContext.Provider value="dark">
+  <App />
+</ThemeContext.Provider>
+
+// Consumer
+function Button() {
+  const theme = useContext(ThemeContext);
+  return <button className={theme}>Click</button>;
+}
+```
+- Re-renders when context value changes
+- Use for global state (theme, auth, i18n)
+---
+
+## 135. useRef :
+- `useRef` creates a mutable ref object that persists across renders.
+- Syntax : `const ref = useRef(initialValue);`
+
+Uses :
+1. **DOM refs**: Access DOM nodes
+   ```jsx
+   const inputRef = useRef(null);
+   <input ref={inputRef} />
+   inputRef.current.focus();
+   ```
+
+2. **Mutable values** (not causing re-renders)
+   ```jsx
+   const intervalRef = useRef(null);
+   useEffect(() => {
+     intervalRef.current = setInterval(() => { /* ... */ }, 1000);
+     return () => clearInterval(intervalRef.current);
+   }, []);
+   ```
+- `ref.current` is mutable
+- Doesn't trigger re-renders on change
+---
+
+## 136. useReducer :
+- `useReducer` manages complex state logic (alternative to `useState`).
+- Syntax : `const [state, dispatch] = useReducer(reducer, initialState);`
+- `reducer`: Pure function `(state, action) => newState`
+- `dispatch`: Send actions
+
+Example: Counter with actions
+```jsx
+const initialState = { count: 0 };
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment': return { count: state.count + 1 };
+    case 'decrement': return { count: state.count - 1 };
+    default: return state;
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  return (
+    <>
+      Count: {state.count}
+      <button onClick={() => dispatch({ type: 'increment' })}>+</button>
+      <button onClick={() => dispatch({ type: 'decrement' })}>-</button>
+    </>
+  );
+}
+```
+
+Use when :
+- State transitions are complex
+- Multiple sub-values
+- With middleware (e.g., Redux-like)
+---
+
+## 137. useCallback :
+- `useCallback` memoizes functions to prevent unnecessary re-creations.
+- Syntax : `const memoizedFn = useCallback(fn, dependencies);`
+- Returns a memoized version of `fn`
+- Changes only if deps change
+
+Example :
+```jsx
+const handleClick = useCallback(() => {
+  console.log('Clicked with count', count);
+}, [count]); // New fn only if count changes
+```
+Use to :
+- Pass stable callbacks to memoized children
+- As deps in `useEffect`
+---
+
+## 138. useMemo :
+- `useMemo` memoizes expensive computations.
+- Syntax : `const memoizedValue = useMemo(computeFn, dependencies);`
+- `computeFn`: Returns value (runs only if deps change)
+- Caches result
+
+Example :
+```jsx
+const filteredList = useMemo(() => {
+  return items.filter(item => item.price > threshold);
+}, [items, threshold]); // Re-compute only if items or threshold change
+```
+Use for :
+- Heavy calculations (sorting, filtering)
+- Derived state that's expensive
+- Diff from `useCallback`: `useMemo` memos values; `useCallback` memos functions.
+---
+
+## 139. useLayoutEffect :
+- Like `useEffect`, but runs **synchronously** after DOM mutations (before browser paints).
+- Syntax : Same as `useEffect`
+
+Use when :
+- Measuring DOM (e.g., getBoundingClientRect)
+- Mutations that affect layout
+```jsx
+useLayoutEffect(() => {
+  // Measure and adjust DOM before paint
+}, [deps]);
+```
+- Rarely needed; prefer `useEffect` for most side effects.
+---
+
+## 140. useImperativeHandle :
+- Customizes the instance value exposed by `forwardRef`.
+- Syntax : `useImperativeHandle(ref, createHandle, dependencies);`
+- Example : Expose custom methods
+```jsx
+const MyInput = forwardRef((props, ref) => {
+  const inputRef = useRef();
+  useImperativeHandle(ref, () => ({
+    focusAndClear: () => {
+      inputRef.current.focus();
+      inputRef.current.value = '';
+    }
+  }));
+  return <input ref={inputRef} {...props} />;
+});
+```
+- Use sparingly — prefers props over imperative code.
+---
+
+## 141. useDebugValue :
+- Labels custom Hooks in React DevTools.
+- Syntax : `useDebugValue(value, formatFn?);`
+```jsx
+function useFriendStatus(friendID) {
+  const [isOnline, setIsOnline] = useState(null);
+  useDebugValue(isOnline ? 'Online' : 'Offline');
+  // ...
+}
+```
+- Only runs in dev mode; no production impact.
+---
+
+## 142. Custom Hooks :
+- Custom Hooks are functions starting with "use" that call other Hooks. They encapsulate reusable logic.
+- Example : Fetch Hook
+```jsx
+function useFetch(url) {
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetch(url)
+      .then(res => res.json())
+      .then(setData)
+      .catch(setError)
+      .finally(() => setLoading(false));
+  }, [url]);
+
+  return { data, loading, error };
+}
+
+// Usage
+const { data, loading, error } = useFetch('/api/user');
+```
+Rules :
+- Can call other Hooks
+- Share logic, not state
+- Compose freely
+---
+
+## 143. Hook Composition :
+- Combine multiple Hooks/custom Hooks in one component or Hook.
+```jsx
+function useUserData(id) {
+  const [user, setUser] = useState(null);
+  useEffect(() => { /* fetch user */ }, [id]);
+  return user;
+}
+
+function Profile({ id }) {
+  const user = useUserData(id);
+  const theme = useContext(ThemeContext);
+  // ...
+}
+```
+- Promotes modularity and reusability.
+---
+
+## 144. Hook Anti-Patterns :
+1. **Violating Rules of Hooks** (conditional calls, etc.)
+2. **Missing Dependencies** in `useEffect`/`useCallback`/`useMemo`
+3. **Stale Closures** (use functional updates in `setState`)
+4. **Overusing Memoization** (premature optimization)
+5. **Mutating Refs in Render** (use effects for side effects)
+6. **Sharing State Between Hooks** (use Context or lift state)
+7. **Calling Hooks in Loops** (extract to component)
+8. **Ignoring Cleanup** (memory leaks)
+- Use ESLint plugin to catch most; test for edge cases.
+---
