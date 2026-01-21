@@ -2862,19 +2862,31 @@ return (
 ---
 
 ## 10. <u> Styling in React </u> -
+
 - React offers multiple approaches to styling components, ranging from traditional CSS to modern CSS-in-JS solutions. Each method has its strengths, trade-offs, and best use cases. The choice often depends on project size, team preferences, performance requirements, and whether you want scoped styles, theming, or utility-first development.
+
 ---
 
 ## 98. Inline Styles :
+
 - Inline styles in React are applied directly via the `style` prop, which accepts a **JavaScript object** with camelCase properties.
+
 ```jsx
 function Button({ isActive }) {
   return (
     <button
-      style={{ backgroundColor: isActive ? '#4CAF50' : '#f44336', color: 'white',
-        padding: '12px 24px', border: 'none', borderRadius: '4px',
-        fontSize: '16px', cursor: 'pointer', opacity: isActive ? 1 : 0.6,
-        transition: 'all 0.3s ease' }} >
+      style={{
+        backgroundColor: isActive ? "#4CAF50" : "#f44336",
+        color: "white",
+        padding: "12px 24px",
+        border: "none",
+        borderRadius: "4px",
+        fontSize: "16px",
+        cursor: "pointer",
+        opacity: isActive ? 1 : 0.6,
+        transition: "all 0.3s ease",
+      }}
+    >
       Click me
     </button>
   );
@@ -2882,20 +2894,25 @@ function Button({ isActive }) {
 ```
 
 **Pros** :
+
 - Dynamic styling is trivial (values from state/props)
 - No extra files or build steps
 - Scoped to the component
 
 **Cons** :
+
 - No pseudo-classes (`:hover`, `:focus`) or media queries
 - Harder to maintain for large components
 - No caching/reuse of styles
 - Verbose syntax (camelCase, no shorthand like `padding: 12px 24px`)
 - Best for : Small components, dynamic values, prototyping.
+
 ---
 
 ## 99. CSS Stylesheets :
+
 - Classic approach: write CSS in `.css` files and import them.
+
 ```css
 /* styles/Button.css */
 .button {
@@ -2906,7 +2923,7 @@ function Button({ isActive }) {
   cursor: pointer;
 }
 .button-primary {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
 }
 .button-danger {
@@ -2914,28 +2931,34 @@ function Button({ isActive }) {
   color: white;
 }
 ```
-```jsx
-import './Button.css';
 
-function Button({ variant = 'primary' }) {
+```jsx
+import "./Button.css";
+
+function Button({ variant = "primary" }) {
   return <button className={`button button-${variant}`}>Click me</button>;
 }
 ```
 
 **Pros**:
+
 - Familiar to everyone
 - Full CSS features (pseudo-classes, media queries, animations)
 - Easy to share across components
 
 **Cons**:
+
 - Global namespace → class name collisions possible
 - No automatic scoping
 - Harder to make truly dynamic
 - Best for: Small projects, teams already comfortable with plain CSS.
+
 ---
 
 ## 100. CSS Modules :
+
 - CSS Modules solve the global namespace problem by **automatically generating unique class names**.
+
 ```css
 /* Button.module.css */
 .button {
@@ -2944,7 +2967,7 @@ function Button({ variant = 'primary' }) {
   border-radius: 4px;
 }
 .primary {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
 }
 .danger {
@@ -2952,33 +2975,37 @@ function Button({ variant = 'primary' }) {
   color: white;
 }
 ```
-```jsx
-import styles from './Button.module.css';
 
-function Button({ variant = 'primary' }) {
+```jsx
+import styles from "./Button.module.css";
+
+function Button({ variant = "primary" }) {
   return (
-    <button className={`${styles.button} ${styles[variant]}`}>
-      Click me
-    </button>
+    <button className={`${styles.button} ${styles[variant]}`}>Click me</button>
   );
 }
 ```
 
 **Pros**:
+
 - Locally scoped class names (no collisions)
 - Clear connection between CSS and component
 - Works with all CSS features
 
 **Cons**:
+
 - Slightly more verbose imports
 - Requires build tool support (Create React App, Vite, Next.js all support it)
 - Best for : Medium to large projects that want scoped CSS without CSS-in-JS.
+
 ---
 
 ## 101. Styled Components :
+
 - A popular **CSS-in-JS** library that lets you write actual CSS inside JavaScript and creates styled components.
+
 ```jsx
-import styled from 'styled-components';
+import styled from "styled-components";
 
 const Button = styled.button`
   padding: 12px 24px;
@@ -2986,7 +3013,8 @@ const Button = styled.button`
   border-radius: 4px;
   font-size: 16px;
   cursor: pointer;
-  background-color: ${props => props.variant === 'primary' ? '#4CAF50' : '#f44336'};
+  background-color: ${(props) =>
+    props.variant === "primary" ? "#4CAF50" : "#f44336"};
   color: white;
   transition: all 0.3s ease;
   &:hover {
@@ -3000,29 +3028,33 @@ function App() {
 ```
 
 **Pros**:
+
 - Full CSS support + dynamic props
 - Automatic scoping (unique class names)
 - Theming support via `ThemeProvider`
 - Great developer experience (colocation of styles and component)
 
 **Cons**:
+
 - Runtime overhead (styles injected at runtime)
 - Larger bundle size
 - Learning curve if new to CSS-in-JS
+
 ---
 
 ## 102. Emotion :
+
 - Emotion is a lightweight, performant CSS-in-JS library with two main APIs: `styled` (like styled-components) and `css` prop.
 
 ```jsx
 /** @jsxImportSource @emotion/react */
-import { css } from '@emotion/react';
+import { css } from "@emotion/react";
 
 const buttonStyles = css`
   padding: 12px 24px;
   border: none;
   border-radius: 4px;
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
 
   &:hover {
@@ -3034,28 +3066,35 @@ function Button() {
   return <button css={buttonStyles}>Click me</button>;
 }
 ```
+
 - Or using `styled` :
+
 ```jsx
-import styled from '@emotion/styled';
+import styled from "@emotion/styled";
 
 const Button = styled.button`
   padding: 12px 24px;
   /* ... */
 `;
 ```
+
 **Pros** :
+
 - Very fast (better runtime performance than styled-components)
 - `css` prop is extremely flexible
 - Great TypeScript support
 - Theming via `ThemeProvider`
 - Best for: Performance-sensitive apps, modern React projects.
+
 ---
 
 ## 103. SCSS/SASS :
+
 - **SASS extends CSS** with variables, nesting, mixins, etc. Use with `.scss` files and CSS Modules or plain imports.
+
 ```scss
 // Button.module.scss
-$primary: #4CAF50;
+$primary: #4caf50;
 $danger: #f44336;
 
 .button {
@@ -3078,86 +3117,102 @@ $danger: #f44336;
   }
 }
 ```
-```jsx
-import styles from './Button.module.scss';
 
-<button className={`${styles.button} ${styles.primary}`}>Click me</button>
+```jsx
+import styles from "./Button.module.scss";
+
+<button className={`${styles.button} ${styles.primary}`}>Click me</button>;
 ```
-**Pros**:
+
+**Pros** :
+
 - Powerful features (variables, nesting, mixins, functions)
 - Familiar to CSS developers
 - Works well with CSS Modules
 
-**Cons**:
+**Cons** :
+
 - Requires build tool support
 - Still global unless using modules
+
 ---
 
 ## 104. Tailwind CSS :
 
-Utility-first CSS framework — write styles using class names directly in JSX.
+- Utility-first CSS framework — write styles using class names directly in JSX.
 
 ```jsx
 <button
   className={`
     px-6 py-3 rounded-md font-medium text-white transition
-    ${isPrimary 
-      ? 'bg-green-600 hover:bg-green-700' 
-      : 'bg-red-600 hover:bg-red-700'}
-    ${disabled ? 'opacity-50 cursor-not-allowed' : ''}
+    ${
+      isPrimary
+        ? "bg-green-600 hover:bg-green-700"
+        : "bg-red-600 hover:bg-red-700"
+    }
+    ${disabled ? "opacity-50 cursor-not-allowed" : ""}
   `}
 >
   Click me
 </button>
 ```
 
-With Tailwind + `clsx`/`cn` helper:
+- With Tailwind + `clsx`/`cn` helper :
 
 ```jsx
-import { cn } from '@/lib/utils';
+import { cn } from "@/lib/utils";
 
 <button
   className={cn(
     "px-6 py-3 rounded-md font-medium text-white transition",
-    isPrimary ? "bg-green-600 hover:bg-green-700" : "bg-red-600 hover:bg-red-700",
-    disabled && "opacity-50 cursor-not-allowed"
+    isPrimary
+      ? "bg-green-600 hover:bg-green-700"
+      : "bg-red-600 hover:bg-red-700",
+    disabled && "opacity-50 cursor-not-allowed",
   )}
 >
   Click me
-</button>
+</button>;
 ```
 
-**Pros**:
+**Pros** :
+
 - Extremely fast development
 - Consistent design
 - No context switching between CSS and JSX
 - Excellent responsive utilities
 
-**Cons**:
+**Cons** :
+
 - Long class strings
 - Requires discipline to avoid bloat
 - Learning curve for utility classes
 
-### CSS-in-JS
+---
 
-General term for libraries that let you write CSS in JavaScript (Emotion, styled-components, JSS, Linaria, Vanilla Extract, etc.).
+## 105. CSS-in-JS :
 
-**Advantages**:
+- General term for libraries that let you write CSS in JavaScript (Emotion, styled-components, JSS, Linaria, Vanilla Extract, etc.).
+
+**Advantages** :
+
 - Scoped styles
 - Dynamic values via props/state
 - Theming
 - Colocation (styles next to component)
 
-**Disadvantages**:
+**Disadvantages** :
+
 - Runtime cost (some libraries)
 - Larger bundles
 - Different mental model than traditional CSS
 
-### Dynamic Styling
+---
 
-Change styles based on state, props, or runtime values.
+## 106. Dynamic Styling :
 
-Examples:
+- Change styles based on state, props, or runtime values.
+- Examples :
 
 ```jsx
 // Inline
@@ -3173,40 +3228,42 @@ className={styles[isActive ? 'active' : 'inactive']}
 css`color: ${isActive ? 'green' : 'red'};`
 ```
 
-### Conditional Styling
+---
 
-Combine dynamic + conditional patterns (see section 8 for more examples).
+## 107. Conditional Styling :
+
+- Combine dynamic + conditional patterns (see section 8 for more examples).
 
 ```jsx
 <div
   className={cn(
     "p-4 rounded-lg",
-    isSuccess ? "bg-green-100 border-green-500" :
-    isError   ? "bg-red-100 border-red-500" :
-                "bg-gray-100 border-gray-300"
+    isSuccess
+      ? "bg-green-100 border-green-500"
+      : isError
+        ? "bg-red-100 border-red-500"
+        : "bg-gray-100 border-gray-300",
   )}
 >
   {message}
 </div>
 ```
 
-### Global Styles
+---
 
-Apply styles that affect the entire app (reset, typography, etc.).
+## 108. Global Styles :
 
-Common approaches:
+- Apply styles that affect the entire app (reset, typography, etc.).
+- Common approaches :
 - Import a global CSS file in `index.js` / `main.tsx`
-
   ```jsx
-  import './global.css';
+  import "./global.css";
   ```
-
 - Use `:root` or `body` selectors
-
 - Styled-components `createGlobalStyle`
 
   ```jsx
-  import { createGlobalStyle } from 'styled-components';
+  import { createGlobalStyle } from "styled-components";
 
   const GlobalStyle = createGlobalStyle`
     body {
@@ -3216,55 +3273,57 @@ Common approaches:
   `;
   ```
 
-### Theming
+---
 
-Centralized theme management for consistent colors, typography, spacing.
+## 109. Theming :
 
-Common solutions:
+- Centralized theme management for consistent colors, typography, spacing.
+- Common solutions :
 - **styled-components / Emotion** `ThemeProvider`
-
   ```jsx
-  <ThemeProvider theme={{ colors: { primary: '#4CAF50' } }}>
+  <ThemeProvider theme={{ colors: { primary: "#4CAF50" } }}>
     <App />
   </ThemeProvider>
   ```
-
 - **Tailwind** with custom config (`tailwind.config.js`)
-
 - **CSS Variables** (see below)
 
-### CSS Variables (Custom Properties)
+---
 
-Modern, powerful way to handle theming and dynamic styles.
+## 110. CSS Variables (Custom Properties) :
+
+- Modern, powerful way to handle theming and dynamic styles.
 
 ```css
 /* global.css */
 :root {
-  --primary: #4CAF50;
+  --primary: #4caf50;
   --danger: #f44336;
   --spacing-unit: 8px;
 }
 
 .dark {
-  --primary: #66BB6A;
+  --primary: #66bb6a;
 }
 ```
 
 ```jsx
-<button style={{ backgroundColor: 'var(--primary)' }}>Click</button>
+<button style={{ backgroundColor: "var(--primary)" }}>Click</button>
 ```
 
-Or in Tailwind:
+- Or in Tailwind :
 
 ```jsx
 <div className="bg-[--primary] text-white">Themed</div>
 ```
 
-**Advantages**: Works everywhere, dynamic updates via JS, great for dark mode.
+- **Advantages**: Works everywhere, dynamic updates via JS, great for dark mode.
 
-### Responsive Design in React
+---
 
-Common patterns:
+## 111. Responsive Design in React :
+
+- Common patterns :
 
 1. **Tailwind responsive utilities**
 
@@ -3286,27 +3345,27 @@ Common patterns:
 3. **useMediaQuery** hook (custom or from libraries like `react-responsive`)
 
    ```jsx
-   const isMobile = useMediaQuery('(max-width: 768px)');
+   const isMobile = useMediaQuery("(max-width: 768px)");
 
    return isMobile ? <MobileNav /> : <DesktopNav />;
    ```
 
 4. **CSS Container Queries** (emerging, modern browsers)
 
-Best practice: Prefer utility-first (Tailwind) or CSS variables + media queries for maintainable responsive design.
+- Best practice: Prefer utility-first (Tailwind) or CSS variables + media queries for maintainable responsive design.
 
-**Summary – Choosing a Styling Approach (2026 React)**
+**Summary – Choosing a Styling Approach**
 
-| Approach             | Best For                              | Scoping | Dynamic | Theming | Bundle Size | Learning Curve |
-|----------------------|---------------------------------------|---------|---------|---------|-------------|----------------|
-| Inline               | Small components, prototyping         | Yes     | Excellent | Poor    | None        | Low            |
-| Plain CSS            | Small apps, traditional teams         | No      | Poor    | Poor    | None        | Low            |
-| CSS Modules          | Medium/large apps, scoped CSS         | Yes     | Good    | Poor    | None        | Medium         |
-| Styled Components    | Theming, colocation, large apps       | Yes     | Excellent | Excellent | Medium      | Medium         |
-| Emotion              | Performance, modern apps              | Yes     | Excellent | Excellent | Small       | Medium         |
-| Tailwind CSS         | Rapid development, design systems     | No*     | Excellent | Excellent | Small–Medium| Medium         |
-| SCSS + Modules       | Teams that love SASS features         | Yes     | Good    | Poor    | None        | Medium         |
+| Approach          | Best For                          | Scoping | Dynamic   | Theming   | Bundle Size  | Learning Curve |
+| ----------------- | --------------------------------- | ------- | --------- | --------- | ------------ | -------------- |
+| Inline            | Small components, prototyping     | Yes     | Excellent | Poor      | None         | Low            |
+| Plain CSS         | Small apps, traditional teams     | No      | Poor      | Poor      | None         | Low            |
+| CSS Modules       | Medium/large apps, scoped CSS     | Yes     | Good      | Poor      | None         | Medium         |
+| Styled Components | Theming, colocation, large apps   | Yes     | Excellent | Excellent | Medium       | Medium         |
+| Emotion           | Performance, modern apps          | Yes     | Excellent | Excellent | Small        | Medium         |
+| Tailwind CSS      | Rapid development, design systems | No\*    | Excellent | Excellent | Small–Medium | Medium         |
+| SCSS + Modules    | Teams that love SASS features     | Yes     | Good      | Poor      | None         | Medium         |
 
-*Tailwind can be scoped with `@apply` or component libraries.
+- \*Tailwind can be scoped with `@apply` or component libraries.
 
-Most modern React projects in 2026 use **Tailwind CSS** (utility-first) or **Emotion** / **styled-components** (CSS-in-JS) for their flexibility, developer experience, and theming capabilities.
+---
