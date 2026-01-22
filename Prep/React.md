@@ -4680,3 +4680,648 @@ useEffect(() => {
 - Always implement cleanup for effects that create ongoing resources.
 
 ---
+
+## 14. <u> Context API </u> -
+
+- The **React Context API** is a built-in mechanism for passing data through the component tree without having to pass props manually at every level (avoiding "prop drilling"). It is ideal for global or shared data such as themes, user authentication, language settings, or app-wide configurations.
+- Context is part of React core since v16.3 (2018) and became much more practical with the `useContext` Hook in v16.8.
+
+---
+
+## 152. Context Basics :
+
+- Context provides a way to share values between components without passing props explicitly through every level of the tree.
+- A context consists of :
+  - A **Provider** — supplies the value
+  - A **Consumer** — reads the value (or the modern `useContext` Hook)
+- Every context has a default value (used when no Provider is found in the tree).
+- Context updates cause consumers to re-render (unless memoized).
+
+Key principle :
+
+- Context is **not** a full state management library like Redux — it's best for **low-to-medium frequency updates** and data that many components need to read.
+
+---
+
+## 153. Creating Context :
+
+- Use `React.createContext()` to create a context object.
+
+```jsx
+import { createContext } from "react";
+
+// Create context with a default value (optional but recommended)
+export const ThemeContext = createContext("light"); // default theme
+
+// Or with a more complex default object
+export const UserContext = createContext({
+  user: null,
+  isAuthenticated: false,
+  login: () => {},
+  logout: () => {},
+});
+```
+
+- The default value is only used when a component tries to consume the context **outside any Provider**.
+
+---
+
+## 154. Provider :
+
+- The `<Context.Provider>` component makes the context value available to all descendants.
+
+```jsx
+import { ThemeContext } from "./ThemeContext";
+
+function App() {
+  const [theme, setTheme] = useState("light");
+
+  return (
+    <ThemeContext.Provider value={{ theme, setTheme }}>
+      <Header />
+      <MainContent />
+      <Footer />
+    </ThemeContext.Provider>
+  );
+}
+```
+
+- The `value` prop can be any JavaScript value (primitive, object, function, etc.).
+- Every time `value` changes (reference equality), all consumers re-render.
+- Multiple Providers can be nested (see below).
+
+---
+
+## 155. Consumer :
+
+- The traditional way (pre-Hooks) to read context is using `<Context.Consumer>`.
+
+```jsx
+<ThemeContext.Consumer>
+  {({ theme }) => <div className={`app ${theme}`}>Current theme: {theme}</div>}
+</ThemeContext.Consumer>
+```
+
+- This pattern is still valid but verbose. Since React 16.8, `useContext` is preferred in functional components.
+
+---
+
+## 156. useContext Hook :
+
+- The modern, clean way to consume context.
+
+```jsx
+import { useContext } from "react";
+import { ThemeContext } from "./ThemeContext";
+
+function ThemedButton() {
+  const { theme, setTheme } = useContext(ThemeContext);
+
+  return (
+    <button
+      className={`btn-${theme}`}
+      onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+    >
+      Toggle Theme ({theme})
+    </button>
+  );
+}
+```
+
+- Re-renders component when context value changes.
+- Must be called inside a component or custom Hook (follows Rules of Hooks).
+- Can consume multiple contexts in one component:
+
+```jsx
+const theme = useContext(ThemeContext);
+const user = useContext(UserContext);
+```
+
+---
+
+## 157. Context Value Updates :
+
+- Context value updates are driven by the Provider's `value` prop changing.
+
+Important :
+
+- React uses **reference equality** (`Object.is`) to decide if value changed.
+- If you pass a new object every render, consumers re-render even if contents are the same.
+
+Bad (causes unnecessary re-renders) :
+
+```jsx
+<ThemeContext.Provider value={{ theme, toggleTheme }}>
+  {/* ... */}
+</ThemeContext.Provider>
+```
+
+- Better (stable reference) :
+
+```jsx
+const value = useMemo(() => ({ theme, toggleTheme }), [theme]);
+return <ThemeContext.Provider value={value}>{/* ... */}</ThemeContext.Provider>;
+```
+
+- Or lift state up and memoize setters with `useCallback`.
+
+---
+
+## 158. Nested Providers :
+
+- You can nest multiple Providers or even the same context with different values.
+
+```jsx
+<ThemeContext.Provider value="dark">
+  <UserContext.Provider value={currentUser}>
+    <Header />
+    <Main />
+    <Footer />
+  </UserContext.Provider>
+
+  {/* Different theme for this subtree */}
+  <ThemeContext.Provider value="light">
+    <Modal />
+  </ThemeContext.Provider>
+</ThemeContext.Provider>
+```
+
+- Inner Providers override outer ones for their subtree — very useful for modals, panels, or localized settings.
+
+---
+
+## 159. Performance Considerations :
+
+- Context can cause performance issues if not used carefully:
+- Every consumer re-renders when Provider value reference changes.
+- Deep trees with many consumers → potential bottleneck.
+
+Mitigation strategies :
+
+- Split contexts (one for theme, one for user, one for cart, etc.)
+- Memoize context value with `useMemo`
+- Memoize consumers with `React.memo` or `useMemo`
+- Use selectors or split state (similar to Redux)
+- For high-frequency updates → prefer Zustand, Jotai, Recoil, or Redux over Context
+
+---
+
+## 160. Context vs Redux :
+
+| Feature        | Context API                       | Redux                                  |
+| -------------- | --------------------------------- | -------------------------------------- |
+| Boilerplate    | Very low                          | Higher (actions, reducers, store)      |
+| Learning curve | Low                               | Medium–High                            |
+| DevTools       | Basic (React DevTools)            | Excellent (Redux DevTools)             |
+| Middleware     | None                              | Yes (thunks, sagas, etc.)              |
+| Performance    | Can be poor with frequent updates | Optimized with selectors & memoization |
+| Best for       | Theme, auth, simple global state  | Complex state, large apps, time-travel |
+| Bundle size    | Zero (built-in)                   | Adds ~2–10 KB + middleware             |
+| Async handling | Manual (useEffect)                | Built-in via middleware                |
+
+**recommendation** :
+
+- Small–medium apps : Context + `useReducer` or lightweight libs (Zustand, Jotai)
+- Large/complex apps with heavy async logic, debugging needs: Redux Toolkit or Zustand
+
+---
+
+## 161. Context Anti-Patterns :
+
+1. **Putting everything in one giant context**  
+   → Causes unnecessary re-renders when unrelated data changes.
+2. **Passing new object literals every render**  
+   → Forces re-renders even if values are the same.
+3. **Using context for local component state**  
+   → Use `useState` instead; context is for shared data.
+4. **Overusing context for prop drilling avoidance**  
+   → Sometimes better to compose components or lift state.
+5. **No memoization on consumers**  
+   → Wrap expensive components in `React.memo` when they consume context.
+6. **Mutating context value directly**  
+   → Always create new objects/arrays (immutability).
+
+Correct pattern example (stable value) :
+
+```jsx
+function ThemeProvider({ children }) {
+  const [theme, setTheme] = useState("light");
+
+  const toggleTheme = useCallback(() => {
+    setTheme((prev) => (prev === "light" ? "dark" : "light"));
+  }, []);
+
+  const value = useMemo(() => ({ theme, toggleTheme }), [theme]);
+
+  return (
+    <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>
+  );
+}
+```
+
+---
+
+## 15. <u> State Management (Advanced) </u> -
+- State management in React evolves from simple local state to sophisticated global solutions as applications grow. Advanced techniques address scalability, performance, and maintainability, especially in large teams or complex apps. This section covers patterns and libraries beyond basic `useState` and Context.
+---
+
+## 162. Local State :
+- Local state refers to state managed within a single component using `useState` or `useReducer`. It is isolated and does not affect or depend on other components directly.
+
+Key characteristics :
+- **Scope** : Limited to the component and its children (via props if passed down).
+- **Use cases** : UI toggles (e.g., open/closed modal), form inputs, counters, or any data that doesn't need to be shared broadly.
+- **Advantages** : Simple, fast, no extra libraries; changes only re-render the component subtree.
+- **Limitations** : As apps grow, sharing state requires prop drilling or lifting.
+
+Example :
+```jsx
+function Counter() {
+  const [count, setCount] = useState(0); // Local state
+
+  return (
+    <div>
+      <p>Local Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+}
+```
+- Best practice : Keep state as local as possible. Only elevate when truly shared.
+---
+
+## 163. Global State :
+- Global state is accessible from any component in the app, often managed outside the component tree (e.g., via stores or Context). It handles data like user authentication, theme, or app-wide settings.
+
+Key characteristics :
+- **Accessibility** : Components subscribe to parts of the state.
+- **Use cases** : User data, API responses shared across pages, real-time updates.
+- **Advantages** : Eliminates prop drilling; centralized updates.
+- **Challenges** : Can lead to over-coupling; performance hits if not selective.
+- Solutions include Context for simple cases, or libraries like Redux, Zustand for complex ones. Global state often combines with local state for optimal architecture.
+---
+
+## 164. Lifting State :
+- Lifting state up moves state from a child component to a common ancestor (parent or higher) to share it among siblings or descendants.
+
+Process :
+1. Identify shared state (e.g., two inputs needing to sync).
+2. Move `useState` to the parent.
+3. Pass state and setters down via props.
+
+Example :
+```jsx
+function Parent() {
+  const [value, setValue] = useState(''); // Lifted state
+
+  return (
+    <>
+      <ChildA value={value} onChange={setValue} />
+      <ChildB value={value} />
+    </>
+  );
+}
+
+function ChildA({ value, onChange }) {
+  return <input value={value} onChange={e => onChange(e.target.value)} />;
+}
+
+function ChildB({ value }) {
+  return <p>Shared value: {value}</p>;
+}
+```
+- Advantages : Enables coordination between components.  
+- Drawbacks : Can lead to prop drilling in deep trees → solve with Context or stores.
+---
+
+## 165. Prop Drilling Solutions :
+- Prop drilling is passing props through multiple uninterested components. Solutions :
+1. **Component Composition** : Break into smaller components or use children props.
+   ```jsx
+   <Layout>
+     <Header user={user} />
+     <Main user={user} />
+   </Layout>
+   ```
+
+2. **Context API** : Wrap subtree in Provider (see section 14).
+3. **State Management Libraries** : Use stores like Redux or Zustand for global access.
+4. **Render Props / Higher-Order Components** : Legacy patterns for sharing logic.
+5. **Hooks** : Custom Hooks to abstract logic.
+- Prioritize: Composition > Context > External stores.
+---
+
+## 166. Context-Based State :
+- Using Context for state management combines `useContext` with `useState` or `useReducer` in a Provider.
+
+Example :
+```jsx
+const CountContext = createContext();
+
+function CountProvider({ children }) {
+  const [count, setCount] = useState(0);
+  return (
+    <CountContext.Provider value={{ count, setCount }}>
+      {children}
+    </CountContext.Provider>
+  );
+}
+
+function Counter() {
+  const { count, setCount } = useContext(CountContext);
+  return <button onClick={() => setCount(count + 1)}>{count}</button>;
+}
+// Usage: Wrap app in <CountProvider>
+```
+- Advantages : Built-in, no extra deps; good for medium complexity.  
+- Performance : Memoize value to avoid re-renders.  
+- Limitations : Not ideal for high-frequency updates or complex async → pair with `useReducer`.
+---
+
+## 167. Redux Core Concepts :
+- Redux is a predictable state container for JS apps, following Flux architecture. Core ideas :
+
+- **Single Source of Truth** : One global store.
+- **State is Read-Only** : Change via actions.
+- **Changes are Pure** : Reducers return new state.
+- **Unidirectional Data Flow** : Action → Reducer → Store → View.
+
+Flow :
+1. UI dispatches action.
+2. Reducer handles action, returns new state.
+3. Store updates, notifies subscribers.
+4. Components re-render with new state.
+
+- Install : `npm install redux react-redux`
+---
+
+## 168. Redux Toolkit :
+- Redux Toolkit (RTK) is the official, opinionated toolset for efficient Redux development. It simplifies setup and reduces boilerplate.
+
+Key features :
+- `configureStore` : Creates store with good defaults (devTools, middleware).
+- `createSlice` : Combines reducers/actions.
+- `createAsyncThunk` : Handles async logic.
+- `createEntityAdapter` : For normalized data.
+
+Example setup :
+```jsx
+import { configureStore } from '@reduxjs/toolkit';
+import counterReducer from './counterSlice';
+
+export const store = configureStore({
+  reducer: {
+    counter: counterReducer,
+  },
+});
+```
+- Recommended for all new Redux projects.
+---
+
+## 169. Redux Store :
+- The store is a single object holding the app's global state tree.
+
+Creation (RTK) :
+
+```jsx
+const store = configureStore({ reducer: rootReducer });
+```
+Methods :
+- `store.getState()`: Current state.
+- `store.dispatch(action)`: Send action.
+- `store.subscribe(listener)`: Listen for changes.
+
+- Wrap app in `<Provider store={store}>` from `react-redux`.
+- State is a plain object; use slices for organization.
+---
+
+## 170. Actions :
+- Actions are plain objects describing "what happened" with a `type` and optional payload.
+```jsx
+{ type: 'counter/increment', payload: 5 }
+```
+
+Created via action creators :
+```jsx
+function increment(amount) {
+  return { type: 'counter/increment', payload: amount };
+}
+
+dispatch(increment(5));
+```
+- In RTK, auto-generated in slices.
+---
+
+## 171. Reducers :
+- Reducers are pure functions that take current state and action, return new state.
+```jsx
+function counterReducer(state = { value: 0 }, action) {
+  switch (action.type) {
+    case 'counter/increment':
+      return { ...state, value: state.value + action.payload };
+    default:
+      return state;
+  }
+}
+```
+- Rules : Immutable updates; no side effects.
+---
+
+## 172. Slices :
+- In RTK, a slice is a "piece" of the Redux store with its reducer and actions.
+```jsx
+import { createSlice } from '@reduxjs/toolkit';
+
+const counterSlice = createSlice({
+  name: 'counter',
+  initialState: { value: 0 },
+  reducers: {
+    increment: (state, action) => {
+      state.value += action.payload;
+    },
+    decrement: (state) => {
+      state.value -= 1;
+    },
+  },
+});
+
+export const { increment, decrement } = counterSlice.actions;
+export default counterSlice.reducer;
+```
+- Combines into root reducer via `combineReducers` or `configureStore`.
+---
+
+## 173. Middleware :
+- Middleware intercepts actions before reducers, enabling async logic, logging, etc.
+- Default in RTK: `thunk`.
+
+Custom :
+```jsx
+const logger = store => next => action => {
+  console.log('dispatching', action);
+  return next(action);
+};
+```
+- Add to store : `configureStore({ middleware: (getDefault) => getDefault().concat(logger) })`
+---
+
+## 174. Thunk :
+- `redux-thunk` allows actions to return functions (thunks) for async code.
+```jsx
+function fetchUser(id) {
+  return async (dispatch) => {
+    dispatch({ type: 'user/fetchStart' });
+    try {
+      const res = await fetch(`/api/user/${id}`);
+      const data = await res.json();
+      dispatch({ type: 'user/fetchSuccess', payload: data });
+    } catch (err) {
+      dispatch({ type: 'user/fetchError', payload: err });
+    }
+  };
+}
+
+dispatch(fetchUser(123));
+```
+- In RTK : `createAsyncThunk`
+```jsx
+const fetchUser = createAsyncThunk('user/fetch', async (id) => {
+  const res = await fetch(`/api/user/${id}`);
+  return res.json();
+});
+```
+---
+
+## 175. Saga (Concept) :
+- Redux Saga uses generators for complex async flows, side effects as "sagas".
+- Concept : Sagas listen for actions, run tasks (e.g., API calls, delays), dispatch new actions.
+```jsx
+import { takeEvery, put, call } from 'redux-saga/effects';
+
+function* fetchUserSaga(action) {
+  try {
+    const user = yield call(fetchUserApi, action.payload);
+    yield put({ type: 'FETCH_USER_SUCCESS', user });
+  } catch (e) {
+    yield put({ type: 'FETCH_USER_FAILURE', error: e });
+  }
+}
+
+function* rootSaga() {
+  yield takeEvery('FETCH_USER_REQUEST', fetchUserSaga);
+}
+```
+- Advantages : Testable, handles complex orchestration.  
+- Use when thunks aren't enough (e.g., long-running processes).
+---
+
+## 176. Zustand :
+- Zustand is a lightweight, minimal state management library (~1KB).
+```jsx
+import { create } from 'zustand';
+
+const useStore = create((set) => ({
+  count: 0,
+  increment: () => set((state) => ({ count: state.count + 1 })),
+}));
+
+function Counter() {
+  const { count, increment } = useStore();
+  return <button onClick={increment}>{count}</button>;
+}
+```
+- Advantages : Simple API, no boilerplate, middleware support (persist, devtools).  
+- Great for medium apps; faster than Redux for many cases.
+---
+
+## 177. Jotai :
+- Jotai provides atomic state management - small, independent "atoms" for granular updates.
+```jsx
+import { atom, useAtom } from 'jotai';
+
+const countAtom = atom(0);
+
+function Counter() {
+  const [count, setCount] = useAtom(countAtom);
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}
+```
+- Advantages : Fine-grained reactivity (only components using an atom re-render); derived atoms; async support.  
+- Ideal for apps with many independent states.
+---
+
+## 178. Recoil :
+- Recoil offers atom-based state with selectors for derived data.
+```jsx
+import { atom, useRecoilState } from 'recoil';
+
+const countState = atom({
+  key: 'countState',
+  default: 0,
+});
+
+function Counter() {
+  const [count, setCount] = useRecoilState(countState);
+  return <button onClick={() => setCount(count + 1)}>{count}</button>;
+}
+```
+- Advantages : Similar to Jotai; built-in async queries; scopes.  
+- Facebook-maintained; good for complex, concurrent apps.
+---
+
+## 179. MobX :
+- MobX uses observable objects and reactions for reactive state.
+```jsx
+import { makeAutoObservable } from 'mobx';
+import { observer } from 'mobx-react-lite';
+
+class CounterStore {
+  count = 0;
+  constructor() {
+    makeAutoObservable(this);
+  }
+  increment() {
+    this.count += 1;
+  }
+}
+
+const store = new CounterStore();
+
+const Counter = observer(() => (
+  <button onClick={() => store.increment()}>{store.count}</button>
+));
+```
+- Advantages : Less boilerplate; automatic tracking; mutable state.  
+- Cons : Different mental model (proxies, observables).  
+- Use for apps needing fine-grained reactivity.
+---
+
+## 180. State Normalization :
+- Normalization structures state as a flat map of entities with IDs, reducing redundancy and easing updates.
+
+Example (denormalized) :
+```json
+{ posts: [{ id: 1, title: 'Post 1', author: { id: 1, name: 'Akhil' } }] }
+```
+
+Normalized :
+```json
+{
+  posts: { byId: { 1: { id: 1, title: 'Post 1', authorId: 1 } }, allIds: [1] },
+  authors: { byId: { 1: { id: 1, name: 'Akhil' } }, allIds: [1] }
+}
+```
+- Advantages : Efficient updates (e.g., update one author); no duplication.  
+- Use libraries like `normalizr` or RTK's `createEntityAdapter`.
+---
+
+## 181. Server vs Client State :
+- **Server State** : Data from APIs (e.g., user profiles, posts). Managed with caching, invalidation, loading states.
+  - Tools : React Query, SWR, RTK Query.
+  - Challenges : Staleness, optimistic updates.
+
+- **Client State** : UI/app-specific (e.g., form drafts, toggles).
+  - Tools: Local state, Context, stores.
+
+- Separation : Use dedicated libraries for server state (e.g., React Query for queries/mutations) to handle fetching, caching, errors. Keep client state simple.
+---
