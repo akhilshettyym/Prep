@@ -3906,38 +3906,51 @@ const handleChange = (e) => {
 ---
 
 ## 12. <u> React Hooks (Core) </u> -
+
 - React Hooks, introduced in React 16.8 (2019), allow functional components to use state, lifecycle features, and other React capabilities without classes. Hooks are functions that "hook into" React's state and lifecycle from function components. They promote cleaner, more reusable code and have become the standard way to write React in 2026.
+
 ---
 
 ## 128. Hooks Rules :
+
 - Hooks follow strict rules to ensure they work correctly with React's rendering and reconciliation :
+
 1. **Only Call Hooks at the Top Level** :
    Do not call Hooks inside loops, conditions, or nested functions. Always call them at the top of your component function. This ensures Hooks are called in the same order on every render, allowing React to track state correctly.
+
    ```jsx
    // Correct
    function MyComponent() {
      const [count, setCount] = useState(0);
-     useEffect(() => { /* ... */ });
+     useEffect(() => {
+       /* ... */
+     });
      return <div>{count}</div>;
    }
 
    // Incorrect (conditional Hook call)
    function Bad() {
      if (condition) {
-       useEffect(() => { /* ... */ }); // React will throw error
+       useEffect(() => {
+         /* ... */
+       }); // React will throw error
      }
    }
    ```
+
 2. **Only Call Hooks from React Function Components or Custom Hooks**  
    Not from regular JavaScript functions, class components, or outside components.
 3. **Custom Hooks Must Start with "use"**  
    This convention helps identify them and enables linting rules (e.g., `eslint-plugin-react-hooks`).
 4. **Hooks Are Not Compatible with Class Components**  
    But you can mix functional and class components in the same app.
+
 - React's `eslint-plugin-react-hooks` plugin enforces these rules. Always enable it in your project.
+
 ---
 
 ## 129. useState :
+
 - `useState` adds local state to functional components.
 - Syntax : `const [state, setState] = useState(initialValue);`
 
@@ -3946,51 +3959,62 @@ const handleChange = (e) => {
 - `initialValue`: Can be primitive, object, array, or lazy function
 - Details : See section 6 for in-depth coverage (initial state, updates, immutability, etc.).
 - Example with lazy init :
+
 ```jsx
 const [user, setUser] = useState(() => loadUserFromLocalStorage());
 ```
+
 - If we try to update an object passed on to the initial state of the useState then we have to update the object by spreading the prevState and then update so that we don't lose the prev state.
 - Or create multiple useStates.
+
 ---
 
 ## 130. useEffect :
+
 - `useEffect` runs side effects (e.g., data fetching, subscriptions, DOM manipulations) after render.
 - Syntax : `useEffect(callback, dependencies);`
 - `callback` : Function with effect code. Can return a cleanup function.
 - `dependencies` : Array of values. Effect runs if any change (or empty [] for mount only).
 
 How it works :
+
 1. Component renders
 2. DOM updates
 3. `useEffect` callback runs (if deps changed or first render)
 
 Example : Fetch data
+
 ```jsx
 useEffect(() => {
   const fetchData = async () => {
-    const response = await fetch('/api/data');
+    const response = await fetch("/api/data");
     const data = await response.json();
     setData(data);
   };
   fetchData();
 }, []); // Empty deps → runs once after mount
 ```
+
 ```jsx
 useEffect(() => {
-    console.log("Resource Changed");
+  console.log("Resource Changed");
 
-    return () => {
-        console.log("Return from resource change");
-    }
+  return () => {
+    console.log("Return from resource change");
+  };
 }, [resourceType]);
 ```
+
 Common uses :
+
 - API calls
 - Event listeners (add in callback, remove in cleanup)
 - Timers/intervals
+
 ---
 
 ## 131. Effect Dependencies :
+
 - Dependencies control when the effect re-runs :
 
 - No deps : Runs after every render
@@ -3998,61 +4022,84 @@ Common uses :
 - [var1, var2] : Runs after initial + when var1 or var2 changes
 
 Rules :
+
 - Include **all** values from component scope used in callback (state, props, functions)
 - ESLint `exhaustive-deps` rule helps
 - If a function is a dep, wrap in `useCallback`
 
 Example with dep :
+
 ```jsx
 useEffect(() => {
   document.title = `You clicked ${count} times`;
 }, [count]); // Re-runs when count changes
 ```
+
 - Omit deps only if you truly want every-render behavior (rare).
+
 ---
 
 ## 132. Cleanup Functions :
+
 - Return a function from the effect callback to clean up (e.g., remove listeners, cancel subscriptions).
 
 Runs:
+
 - Before next effect run
 - On unmount
+
 ```jsx
 useEffect(() => {
-  const handleResize = () => { /* ... */ };
-  window.addEventListener('resize', handleResize);
+  const handleResize = () => {
+    /* ... */
+  };
+  window.addEventListener("resize", handleResize);
 
   return () => {
-    window.removeEventListener('resize', handleResize);
+    window.removeEventListener("resize", handleResize);
   };
 }, []); // Cleanup on unmount
 ```
+
 - Essential for preventing memory leaks in long-lived apps.
+
 ---
 
 ## 133. Multiple Effects :
+
 - Use as many `useEffect` as needed — better than one giant effect.
+
 ```jsx
-useEffect(() => { /* Fetch user */ }, [userId]);
-useEffect(() => { /* Setup subscription */ }, [user]);
-useEffect(() => { /* Update title */ }, [title]);
+useEffect(() => {
+  /* Fetch user */
+}, [userId]);
+useEffect(() => {
+  /* Setup subscription */
+}, [user]);
+useEffect(() => {
+  /* Update title */
+}, [title]);
 ```
+
 - This separates concerns and makes code easier to read/maintain.
+
 ---
 
 ## 134. useContext :
+
 - `useContext` subscribes to React Context values without prop drilling.
 - Syntax : `const value = useContext(MyContext);`
 
 Example :
+
 ```jsx
 // Context creation
-const ThemeContext = createContext('light');
+const ThemeContext = createContext("light");
 
 // Provider
 <ThemeContext.Provider value="dark">
   <App />
-</ThemeContext.Provider>
+</ThemeContext.Provider>;
 
 // Consumer
 function Button() {
@@ -4060,19 +4107,24 @@ function Button() {
   return <button className={theme}>Click</button>;
 }
 ```
+
 - Re-renders when context value changes
 - Use for global state (theme, auth, i18n)
+
 ---
 
 ## 135. useRef :
+
 - `useRef` creates a mutable ref object that persists across renders.
 - Syntax : `const ref = useRef(initialValue);`
 
 Uses :
+
 1. **DOM refs**: Access DOM nodes
+
    ```jsx
    const inputRef = useRef(null);
-   <input ref={inputRef} />
+   <input ref={inputRef} />;
    inputRef.current.focus();
    ```
 
@@ -4080,135 +4132,174 @@ Uses :
    ```jsx
    const intervalRef = useRef(null);
    useEffect(() => {
-     intervalRef.current = setInterval(() => { /* ... */ }, 1000);
+     intervalRef.current = setInterval(() => {
+       /* ... */
+     }, 1000);
      return () => clearInterval(intervalRef.current);
    }, []);
    ```
+
 - `ref.current` is mutable
 - Doesn't trigger re-renders on change
+
 ---
 
 ## 136. useReducer :
+
 - `useReducer` manages complex state logic (alternative to `useState`).
 - Syntax : `const [state, dispatch] = useReducer(reducer, initialState);`
 - `reducer`: Pure function `(state, action) => newState`
 - `dispatch`: Send actions
 
-Example: Counter with actions
+Example : Counter with actions
+
 ```jsx
-const initialState = { count: 0 };
+const ACTIONS = {
+  INCREMENT: "increment",
+  DECREMENT: "decrement",
+};
 
 function reducer(state, action) {
   switch (action.type) {
-    case 'increment': return { count: state.count + 1 };
-    case 'decrement': return { count: state.count - 1 };
-    default: return state;
+    case ACTIONS.INCREMENT:
+      return { count: state.count + 1 };
+    case ACTIONS.DECREMENT:
+      return { count: state.count - 1 };
+    default:
+      return state;
   }
 }
 
 function Counter() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, { count: 0 });
   return (
     <>
-      Count: {state.count}
-      <button onClick={() => dispatch({ type: 'increment' })}>+</button>
-      <button onClick={() => dispatch({ type: 'decrement' })}>-</button>
+      Count : {state.count}
+      <button onClick={() => dispatch({ type: ACTIONS.INCREMENT })}>+</button>
+      <button onClick={() => dispatch({ type: ACTIONS.DECREMENT })}>-</button>
     </>
   );
 }
 ```
 
 Use when :
+
 - State transitions are complex
 - Multiple sub-values
 - With middleware (e.g., Redux-like)
+
 ---
 
 ## 137. useCallback :
+
 - `useCallback` memoizes functions to prevent unnecessary re-creations.
 - Syntax : `const memoizedFn = useCallback(fn, dependencies);`
 - Returns a memoized version of `fn`
 - Changes only if deps change
 
 Example :
+
 ```jsx
 const handleClick = useCallback(() => {
-  console.log('Clicked with count', count);
+  console.log("Clicked with count", count);
 }, [count]); // New fn only if count changes
 ```
+
 Use to :
+
 - Pass stable callbacks to memoized children
 - As deps in `useEffect`
+
 ---
 
 ## 138. useMemo :
+
 - `useMemo` memoizes expensive computations.
 - Syntax : `const memoizedValue = useMemo(computeFn, dependencies);`
 - `computeFn`: Returns value (runs only if deps change)
 - Caches result
 
 Example :
+
 ```jsx
 const filteredList = useMemo(() => {
-  return items.filter(item => item.price > threshold);
+  return items.filter((item) => item.price > threshold);
 }, [items, threshold]); // Re-compute only if items or threshold change
 ```
+
 Use for :
+
 - Heavy calculations (sorting, filtering)
 - Derived state that's expensive
 - Diff from `useCallback`: `useMemo` memos values; `useCallback` memos functions.
+
 ---
 
 ## 139. useLayoutEffect :
+
 - Like `useEffect`, but runs **synchronously** after DOM mutations (before browser paints).
 - Syntax : Same as `useEffect`
 
 Use when :
+
 - Measuring DOM (e.g., getBoundingClientRect)
 - Mutations that affect layout
+
 ```jsx
 useLayoutEffect(() => {
   // Measure and adjust DOM before paint
 }, [deps]);
 ```
+
 - Rarely needed; prefer `useEffect` for most side effects.
+
 ---
 
 ## 140. useImperativeHandle :
+
 - Customizes the instance value exposed by `forwardRef`.
 - Syntax : `useImperativeHandle(ref, createHandle, dependencies);`
 - Example : Expose custom methods
+
 ```jsx
 const MyInput = forwardRef((props, ref) => {
   const inputRef = useRef();
   useImperativeHandle(ref, () => ({
     focusAndClear: () => {
       inputRef.current.focus();
-      inputRef.current.value = '';
-    }
+      inputRef.current.value = "";
+    },
   }));
   return <input ref={inputRef} {...props} />;
 });
 ```
+
 - Use sparingly — prefers props over imperative code.
+
 ---
 
 ## 141. useDebugValue :
+
 - Labels custom Hooks in React DevTools.
 - Syntax : `useDebugValue(value, formatFn?);`
+
 ```jsx
 function useFriendStatus(friendID) {
   const [isOnline, setIsOnline] = useState(null);
-  useDebugValue(isOnline ? 'Online' : 'Offline');
+  useDebugValue(isOnline ? "Online" : "Offline");
   // ...
 }
 ```
+
 - Only runs in dev mode; no production impact.
+
 ---
 
 ## 142. Custom Hooks :
+
 - Custom Hooks are functions starting with "use" that call other Hooks. They encapsulate reusable logic.
 - Example : Fetch Hook
+
 ```jsx
 function useFetch(url) {
   const [data, setData] = useState(null);
@@ -4217,7 +4308,7 @@ function useFetch(url) {
 
   useEffect(() => {
     fetch(url)
-      .then(res => res.json())
+      .then((res) => res.json())
       .then(setData)
       .catch(setError)
       .finally(() => setLoading(false));
@@ -4227,20 +4318,49 @@ function useFetch(url) {
 }
 
 // Usage
-const { data, loading, error } = useFetch('/api/user');
+const { data, loading, error } = useFetch("/api/user");
 ```
+
 Rules :
+
 - Can call other Hooks
 - Share logic, not state
 - Compose freely
+
+```jsx
+const [name, setName] = useLocalStorage("name", "");
+
+import { useState } from "react";
+
+function getSavedValue(key, initialValue) {
+  const savedValue = JSON.parse(localStorage.getItem(key));
+  if (savedValue) return savedValue;
+  if (initialValue instanceof Function) return initialValue();
+  return initialValue;
+}
+export default function useLocalStorage(key, initialValue) {
+  const [value, setvalue] = useState(() => {
+    return getSavedValue(key, initialValue);
+  });
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(value));
+  }, [value]);
+  return [value, setValue];
+}
+```
+
 ---
 
 ## 143. Hook Composition :
+
 - Combine multiple Hooks/custom Hooks in one component or Hook.
+
 ```jsx
 function useUserData(id) {
   const [user, setUser] = useState(null);
-  useEffect(() => { /* fetch user */ }, [id]);
+  useEffect(() => {
+    /* fetch user */
+  }, [id]);
   return user;
 }
 
@@ -4250,10 +4370,13 @@ function Profile({ id }) {
   // ...
 }
 ```
+
 - Promotes modularity and reusability.
+
 ---
 
 ## 144. Hook Anti-Patterns :
+
 1. **Violating Rules of Hooks** (conditional calls, etc.)
 2. **Missing Dependencies** in `useEffect`/`useCallback`/`useMemo`
 3. **Stale Closures** (use functional updates in `setState`)
@@ -4262,5 +4385,298 @@ function Profile({ id }) {
 6. **Sharing State Between Hooks** (use Context or lift state)
 7. **Calling Hooks in Loops** (extract to component)
 8. **Ignoring Cleanup** (memory leaks)
+
 - Use ESLint plugin to catch most; test for edge cases.
+
+---
+
+## 13. <u> Component Lifecycle (Conceptual) </u> -
+
+- The React component lifecycle refers to the series of phases a component goes through from its creation to its removal from the DOM. Understanding the lifecycle is crucial for managing side effects, optimizing performance, and ensuring proper cleanup. React components have three main phases: **Mounting**, **Updating**, and **Unmounting**.
+- In class components (legacy), these phases are managed via specific lifecycle methods. In functional components (modern standard), Hooks like `useEffect` and `useLayoutEffect` replicate and simplify this behavior.
+
+---
+
+## 145. Mounting Phase :
+
+- The mounting phase occurs when a component is being created and inserted into the DOM for the first time. This is the initial render cycle.
+- Key steps :
+
+1. **Constructor/Initialization** : State and props are set up.
+2. **Render** : The component's JSX is evaluated to create the initial DOM structure.
+3. **DOM Insertion** : The rendered output is added to the DOM.
+4. **Post-Mount Effects** : Side effects (e.g., data fetching, subscriptions) are run after the DOM is updated.
+
+In class components :
+
+- Methods called : `constructor()`, `getDerivedStateFromProps()`, `render()`, `componentDidMount()`
+
+In functional components :
+
+- The component function runs (initial state via `useState`).
+- Effects with empty deps (`useEffect(() => {}, [])`) run after mount.
+
+Example (functional) :
+
+```jsx
+function MyComponent() {
+  useEffect(() => {
+    console.log("Component mounted");
+    // Fetch data or set up listeners here
+  }, []); // Empty array → runs once after mount
+
+  return <div>Hello</div>;
+}
+```
+
+- This phase is ideal for initial setup, like API calls or event listeners.
+
+---
+
+## 146. Updating Phase :
+
+- The updating phase happens whenever a component's state or props change, causing a re-render. React efficiently diffs the changes and updates only what's necessary.
+
+Key steps :
+
+1. **Receive New Props/State** : Detect changes.
+2. **Pre-Update Logic** : Decide if update is needed or derive new state.
+3. **Render** : Re-evaluate JSX with new data.
+4. **DOM Update** : Apply changes to the DOM.
+5. **Post-Update Effects** : Run side effects after update.
+
+Triggers :
+
+- `setState` / `useState` setter
+- Prop changes from parent
+- Force update (rare)
+
+In class components :
+
+- Methods : `getDerivedStateFromProps()`, `shouldComponentUpdate()`, `render()`, `getSnapshotBeforeUpdate()`, `componentDidUpdate()`
+
+In functional components :
+
+- Component re-runs with new state/props.
+- `useEffect` with deps runs if deps changed.
+
+Example :
+
+```jsx
+function Counter({ initial }) {
+  const [count, setCount] = useState(initial);
+
+  useEffect(() => {
+    console.log("Count updated to", count);
+    // Side effects based on count
+  }, [count]); // Runs after update when count changes
+
+  return <button onClick={() => setCount((c) => c + 1)}>{count}</button>;
+}
+```
+
+- Optimize with `shouldComponentUpdate` (class) or `React.memo` (functional) to skip unnecessary updates.
+
+---
+
+## 147. Unmounting Phase :
+
+- The unmounting phase occurs when a component is removed from the DOM (e.g., conditional rendering hides it, or parent unmounts).
+
+Key steps :
+
+1. **Pre-Unmount Cleanup** : Remove listeners, cancel requests, clear timers.
+2. **Removal** : Component is destroyed, state is lost.
+
+In class components :
+
+- Method: `componentWillUnmount()`
+
+In functional components :
+
+- Cleanup function returned from `useEffect`.
+
+Example :
+
+```jsx
+function Timer() {
+  useEffect(() => {
+    const id = setInterval(() => console.log("Tick"), 1000);
+    console.log("Mounted");
+
+    return () => {
+      clearInterval(id);
+      console.log("Unmounted and cleaned up");
+    };
+  }, []); // Cleanup runs on unmount
+
+  return <div>Timer running</div>;
+}
+```
+
+- Always clean up to prevent memory leaks, especially in SPAs where components mount/unmount frequently.
+
+---
+
+## 148. Lifecycle Methods (Class) :
+
+- Class components (legacy, pre-Hooks) use explicit methods for each lifecycle phase. These are called automatically by React.
+
+Full list :
+
+1. **Mounting** :
+   - `constructor(props)`v: Initialize state/props bindings.
+   - `static getDerivedStateFromProps(props, state)` : Derive state from props (rare).
+   - `render()` : Return JSX (pure, no side effects).
+   - `componentDidMount()` : DOM is ready; fetch data, add listeners.
+
+2. **Updating** :
+   - `static getDerivedStateFromProps(props, state)` : Update state based on prop changes.
+   - `shouldComponentUpdate(nextProps, nextState)` : Return false to skip update (optimization).
+   - `render()` : Re-render JSX.
+   - `getSnapshotBeforeUpdate(prevProps, prevState)` : Capture DOM info before update (e.g., scroll position).
+   - `componentDidUpdate(prevProps, prevState, snapshot)` : Post-update; compare prev/current, run effects.
+
+3. **Unmounting**:
+   - `componentWillUnmount()`: Cleanup.
+
+4. **Error Handling**:
+   - `static getDerivedStateFromError(error)`
+   - `componentDidCatch(error, info)`
+
+Example class :
+
+```jsx
+class Clock extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { time: new Date() };
+  }
+
+  componentDidMount() {
+    this.timer = setInterval(() => this.tick(), 1000);
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.format !== this.props.format) {
+      console.log("Format changed");
+    }
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.timer);
+  }
+
+  tick() {
+    this.setState({ time: new Date() });
+  }
+
+  render() {
+    return <div>{this.state.time.toLocaleTimeString()}</div>;
+  }
+}
+```
+
+- Avoid new code with classes; use Hooks instead.
+
+---
+
+## 149. Mapping Lifecycle to Hooks :
+
+- Hooks replace class lifecycles with a more flexible, composable system.
+
+Mapping :
+
+- **constructor** : Initial `useState` calls.
+- **componentDidMount** : `useEffect(() => {}, [])`
+- **componentDidUpdate** : `useEffect(() => {}, [deps])` (runs after updates when deps change)
+- **componentWillUnmount** : Cleanup return from `useEffect`
+- **shouldComponentUpdate** : `React.memo` or `useMemo` for children
+- **getDerivedStateFromProps** : Compute derived values in render or `useMemo`
+- **getSnapshotBeforeUpdate** : `useLayoutEffect` (sync before paint)
+
+Example Hook equivalent of class Clock :
+
+```jsx
+function Clock() {
+  const [time, setTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []); // Mount/unmount
+
+  return <div>{time.toLocaleTimeString()}</div>;
+}
+```
+
+- Hooks are more powerful: Multiple effects, custom Hooks for shared logic.
+
+---
+
+## 150. Side Effects Handling :
+
+- Side effects are operations with external impact (non-pure): API calls, DOM mutations, logging, subscriptions.
+
+In React :
+
+- Handle in `useEffect` / `useLayoutEffect` (functional) or lifecycle methods (class).
+- Keep render pure: No side effects in render body.
+
+Best practices :
+
+- Fetch data in effects with deps (e.g., [userId])
+- Use async/await or promises inside effects
+- Avoid infinite loops: Include all used values in deps
+- For server components (React 18+), use Suspense for data fetching
+
+Example : Debounced search
+
+```jsx
+useEffect(() => {
+  const timeout = setTimeout(() => {
+    fetch(`/api/search?q=${query}`);
+  }, 300);
+  return () => clearTimeout(timeout);
+}, [query]);
+```
+
+---
+
+## 151. Cleanup Logic :
+
+- Cleanup prevents resource leaks (e.g., open sockets, intervals, event listeners).
+
+In `useEffect` :
+
+- Return a function from the callback.
+- Runs before next effect or on unmount.
+
+In classes : `componentWillUnmount` / `componentDidUpdate` (manual).
+
+Common cleanups :
+
+- `clearInterval` / `clearTimeout`
+- Remove event listeners: `window.removeEventListener`
+- Cancel fetches: `AbortController`
+- Close WebSockets/subscriptions
+
+Example with AbortController :
+
+```jsx
+useEffect(() => {
+  const controller = new AbortController();
+  fetch("/api/data", { signal: controller.signal })
+    .then((res) => res.json())
+    .then(setData)
+    .catch((err) => {
+      if (err.name !== "AbortError") console.error(err);
+    });
+
+  return () => controller.abort();
+}, []);
+```
+
+- Always implement cleanup for effects that create ongoing resources.
+
 ---
